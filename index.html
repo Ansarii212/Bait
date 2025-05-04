@@ -3,7 +3,10 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>موقع سمسار عقاري</title>
+  <title>تسجيل الدخول وإدارة العقارات</title>
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -87,10 +90,12 @@
 <div id="main-content">
   <div id="addForm" class="add-form">
     <h3>إضافة عقار جديد</h3>
+    <input type="text" id="type" placeholder="نوع العقار (شقة أو أرض)" />
     <input type="text" id="title" placeholder="عنوان العقار" />
-    <textarea id="desc" placeholder="وصف العقار"></textarea>
+    <textarea id="description" placeholder="وصف العقار"></textarea>
     <input type="text" id="image" placeholder="رابط الصورة" />
     <input type="text" id="price" placeholder="السعر" />
+    <input type="text" id="location" placeholder="الموقع" />
     <button onclick="addProperty()">إضافة</button>
   </div>
 
@@ -98,8 +103,21 @@
 </div>
 
 <script>
+  // Firebase Config
+  const firebaseConfig = {
+    apiKey: "AIzaSyCr4T8GLRxtf_6LNrokjKvmBOwSkuGO5yQ",
+    authDomain: "hamsa-6009e.firebaseapp.com",
+    databaseURL: "https://hamsa-6009e-default-rtdb.firebaseio.com",
+    projectId: "hamsa-6009e",
+    storageBucket: "hamsa-6009e.appspot.com",
+    messagingSenderId: "998163671039",
+    appId: "1:998163671039:web:d1930ea5b71a3a3fc729ca",
+  };
+
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.database();
+
   let isAdmin = false;
-  let properties = [];
 
   function login() {
     const code = document.getElementById("countryCode").value;
@@ -108,51 +126,53 @@
 
     if (phone === "534553706") {
       isAdmin = true;
+      document.getElementById("addForm").style.display = "block";
     }
 
     document.getElementById("loginScreen").style.display = "none";
     document.getElementById("main-content").style.display = "block";
 
-    if (isAdmin) {
-      document.getElementById("addForm").style.display = "block";
-    }
-
-    renderProperties();
+    loadProperties();
   }
 
   function addProperty() {
-    const title = document.getElementById("title").value;
-    const desc = document.getElementById("desc").value;
-    const img = document.getElementById("image").value;
-    const price = document.getElementById("price").value;
-
     const property = {
-      title, desc, img, price, date: new Date()
+      type: document.getElementById("type").value,
+      title: document.getElementById("title").value,
+      description: document.getElementById("description").value,
+      price: document.getElementById("price").value,
+      location: document.getElementById("location").value,
+      image: document.getElementById("image").value,
+      createdAt: Date.now()
     };
 
-    properties.unshift(property); // Add to top
-    renderProperties();
-
-    // Reset
-    document.getElementById("title").value = "";
-    document.getElementById("desc").value = "";
-    document.getElementById("image").value = "";
-    document.getElementById("price").value = "";
+    db.ref("properties").push(property).then(() => {
+      alert("تمت الإضافة بنجاح");
+      loadProperties();
+    });
   }
 
-  function renderProperties() {
-    const container = document.getElementById("properties");
-    container.innerHTML = "";
-    properties.forEach((prop) => {
-      const el = document.createElement("div");
-      el.className = "property";
-      el.innerHTML = `
-        <h4>${prop.title}</h4>
-        <p>${prop.desc}</p>
-        <img src="${prop.img}" alt="صورة العقار" />
-        <p><strong>السعر:</strong> ${prop.price} ريال</p>
-      `;
-      container.appendChild(el);
+  function loadProperties() {
+    db.ref("properties").orderByChild("createdAt").once("value", snapshot => {
+      const container = document.getElementById("properties");
+      container.innerHTML = "";
+      let data = [];
+      snapshot.forEach(child => {
+        data.push(child.val());
+      });
+      data.reverse().forEach(p => {
+        const div = document.createElement("div");
+        div.className = "property";
+        div.innerHTML = `
+          <h4>${p.title}</h4>
+          <p><strong>النوع:</strong> ${p.type}</p>
+          <p><strong>الوصف:</strong> ${p.description}</p>
+          <p><strong>السعر:</strong> ${p.price} ريال</p>
+          <p><strong>الموقع:</strong> ${p.location}</p>
+          ${p.image ? `<img src="${p.image}" />` : ""}
+        `;
+        container.appendChild(div);
+      });
     });
   }
 </script>
