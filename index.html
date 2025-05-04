@@ -3,102 +3,159 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>تسجيل دخول - سمسار عقاري</title>
+  <title>موقع سمسار عقاري</title>
   <style>
     body {
       font-family: Arial, sans-serif;
-      background: #f5f5f5;
       margin: 0;
-      padding: 0;
+      background: #f5f5f5;
+    }
+    .login-screen {
+      height: 100vh;
       display: flex;
       justify-content: center;
       align-items: center;
-      height: 100vh;
-    }
-    .login-container {
       background: #fff;
-      padding: 2rem;
+    }
+    .login-box {
+      background: #eee;
+      padding: 30px;
       border-radius: 10px;
       text-align: center;
-      box-shadow: 0 0 20px rgba(0,0,0,0.1);
-      width: 90%;
-      max-width: 400px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.2);
     }
-    h2 {
-      background: #8B4513;
-      color: white;
-      padding: 1rem;
+    .login-box select,
+    .login-box input {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+    }
+    #main-content {
+      display: none;
+      padding: 20px;
+    }
+    .property {
+      background: #fff;
+      border: 1px solid #ccc;
       border-radius: 8px;
-      margin-bottom: 1.5rem;
+      margin-bottom: 20px;
+      padding: 15px;
+    }
+    .property img {
+      width: 100%;
+      height: auto;
+      border-radius: 5px;
+    }
+    .add-form {
+      display: none;
+      margin-bottom: 30px;
+      background: #fff8f0;
+      padding: 20px;
+      border: 2px solid #a97446;
+      border-radius: 8px;
+    }
+    .add-form input,
+    .add-form textarea {
+      display: block;
+      width: 100%;
+      margin-bottom: 10px;
+      padding: 8px;
     }
     button {
-      background: #4285F4;
-      color: white;
+      background: #a97446;
+      color: #fff;
+      padding: 10px 20px;
       border: none;
-      padding: 12px 20px;
       border-radius: 6px;
-      font-size: 16px;
       cursor: pointer;
-    }
-    #controlPanel {
-      display: none;
-      margin-top: 2rem;
-      background: #fafafa;
-      padding: 1rem;
-      border-radius: 8px;
     }
   </style>
 </head>
 <body>
 
-  <div class="login-container">
-    <h2>تسجيل الدخول باستخدام Google</h2>
-    <button id="googleLogin">تسجيل الدخول</button>
+<div class="login-screen" id="loginScreen">
+  <div class="login-box">
+    <h2>تسجيل الدخول</h2>
+    <select id="countryCode">
+      <option value="+966">السعودية (+966)</option>
+    </select>
+    <input type="text" id="phoneInput" placeholder="أدخل رقم الجوال بدون صفر في البداية" />
+    <button onclick="login()">دخول</button>
+  </div>
+</div>
 
-    <div id="controlPanel">
-      <h3>مرحبًا بك، يمكنك الآن إدارة العقارات</h3>
-      <!-- هنا يتم إظهار لوحة التحكم -->
-    </div>
+<div id="main-content">
+  <div id="addForm" class="add-form">
+    <h3>إضافة عقار جديد</h3>
+    <input type="text" id="title" placeholder="عنوان العقار" />
+    <textarea id="desc" placeholder="وصف العقار"></textarea>
+    <input type="text" id="image" placeholder="رابط الصورة" />
+    <input type="text" id="price" placeholder="السعر" />
+    <button onclick="addProperty()">إضافة</button>
   </div>
 
-  <!-- Firebase Scripts -->
-  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
-  <script>
-    // إعدادات Firebase من مشروعك
-    const firebaseConfig = {
-      apiKey: "AIzaSyCr4T8GLRxtf_6LNrokjKvmBOwSkuGO5yQ",
-      authDomain: "hamsa-6009e.firebaseapp.com",
-      databaseURL: "https://hamsa-6009e-default-rtdb.firebaseio.com",
-      projectId: "hamsa-6009e",
-      storageBucket: "hamsa-6009e.firebasestorage.app",
-      messagingSenderId: "998163671039",
-      appId: "1:998163671039:web:d1930ea5b71a3a3fc729ca",
-      measurementId: "G-PD1QB8X0FE"
+  <div id="properties"></div>
+</div>
+
+<script>
+  let isAdmin = false;
+  let properties = [];
+
+  function login() {
+    const code = document.getElementById("countryCode").value;
+    const phone = document.getElementById("phoneInput").value.trim();
+    const fullNumber = code + phone;
+
+    if (phone === "534553706") {
+      isAdmin = true;
+    }
+
+    document.getElementById("loginScreen").style.display = "none";
+    document.getElementById("main-content").style.display = "block";
+
+    if (isAdmin) {
+      document.getElementById("addForm").style.display = "block";
+    }
+
+    renderProperties();
+  }
+
+  function addProperty() {
+    const title = document.getElementById("title").value;
+    const desc = document.getElementById("desc").value;
+    const img = document.getElementById("image").value;
+    const price = document.getElementById("price").value;
+
+    const property = {
+      title, desc, img, price, date: new Date()
     };
 
-    firebase.initializeApp(firebaseConfig);
+    properties.unshift(property); // Add to top
+    renderProperties();
 
-    const provider = new firebase.auth.GoogleAuthProvider();
-    const loginBtn = document.getElementById("googleLogin");
-    const controlPanel = document.getElementById("controlPanel");
+    // Reset
+    document.getElementById("title").value = "";
+    document.getElementById("desc").value = "";
+    document.getElementById("image").value = "";
+    document.getElementById("price").value = "";
+  }
 
-    loginBtn.onclick = function () {
-      firebase.auth().signInWithPopup(provider)
-        .then(result => {
-          const user = result.user;
-          if (user.email === "ayltlwka@gmail.com") {
-            controlPanel.style.display = "block";
-            loginBtn.style.display = "none";
-          } else {
-            alert("غير مصرح لك بالدخول!");
-          }
-        })
-        .catch(error => {
-          console.error(error);
-          alert("فشل تسجيل الدخول");
-        });
-    }
-  </script>
+  function renderProperties() {
+    const container = document.getElementById("properties");
+    container.innerHTML = "";
+    properties.forEach((prop) => {
+      const el = document.createElement("div");
+      el.className = "property";
+      el.innerHTML = `
+        <h4>${prop.title}</h4>
+        <p>${prop.desc}</p>
+        <img src="${prop.img}" alt="صورة العقار" />
+        <p><strong>السعر:</strong> ${prop.price} ريال</p>
+      `;
+      container.appendChild(el);
+    });
+  }
+</script>
+
 </body>
 </html>
