@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>موقع سمسار عقاري</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f8f8f8;
+      margin: 0;
+      padding: 0;
+    }
+    header {
+      background-color: #4e342e;
+      color: white;
+      padding: 20px;
+      text-align: center;
+      font-size: 24px;
+    }
+    .container {
+      padding: 20px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .property-card {
+      background-color: white;
+      width: 300px;
+      margin: 15px;
+      border-radius: 10px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      overflow: hidden;
+      transition: transform 0.3s;
+    }
+    .property-card:hover {
+      transform: scale(1.03);
+    }
+    .property-image {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+    }
+    .property-details {
+      padding: 15px;
+    }
+    .property-details h3 {
+      margin: 0 0 10px;
+      font-size: 20px;
+      color: #4e342e;
+    }
+    .property-details p {
+      margin: 5px 0;
+      font-size: 14px;
+      color: #555;
+    }
+    .price {
+      color: #d84315;
+      font-weight: bold;
+      margin-top: 10px;
+    }
+
+    #login-box, #control-panel {
+      max-width: 500px;
+      margin: 20px auto;
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    label {
+      display: block;
+      margin: 15px 0 5px;
+      font-weight: bold;
+    }
+
+    input, textarea {
+      width: 100%;
+      padding: 10px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+
+    button {
+      background-color: #6d4c41;
+      color: white;
+      padding: 10px 15px;
+      border: none;
+      margin-top: 20px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #5d4037;
+    }
+
+    #control-panel {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+  <header>موقع سمسار عقاري</header>
+
+  <!-- تسجيل الدخول بالبريد -->
+  <div id="login-box">
+    <label>أدخل بريدك الإلكتروني لعرض لوحة التحكم:</label>
+    <input type="email" id="email" placeholder="you@example.com" />
+    <button onclick="checkEmail()">تسجيل الدخول</button>
+  </div>
+
+  <!-- لوحة التحكم -->
+  <div id="control-panel">
+    <h3>لوحة التحكم - إضافة عقار</h3>
+    <form onsubmit="addProperty(event)">
+      <label>عنوان العقار:</label>
+      <input type="text" id="title" required>
+
+      <label>الوصف:</label>
+      <textarea id="description" required></textarea>
+
+      <label>السعر:</label>
+      <input type="text" id="price" required>
+
+      <label>رابط صورة العقار:</label>
+      <input type="url" id="image" required>
+
+      <button type="submit">إضافة العقار</button>
+    </form>
+  </div>
+
+  <!-- عرض العقارات -->
+  <div class="container" id="property-list"></div>
+
+  <script>
+    // تحميل العقارات
+    function loadProperties() {
+      const container = document.getElementById("property-list");
+      container.innerHTML = "";
+
+      let properties = JSON.parse(localStorage.getItem("properties")) || [];
+
+      properties.forEach(p => {
+        const card = document.createElement("div");
+        card.className = "property-card";
+
+        card.innerHTML = `
+          <img src="${p.image}" alt="عقار" class="property-image">
+          <div class="property-details">
+            <h3>${p.title}</h3>
+            <p>${p.description}</p>
+            <p class="price">${p.price}</p>
+          </div>
+        `;
+
+        container.appendChild(card);
+      });
+    }
+
+    function addProperty(event) {
+      event.preventDefault();
+      const title = document.getElementById("title").value;
+      const description = document.getElementById("description").value;
+      const price = document.getElementById("price").value;
+      const image = document.getElementById("image").value;
+
+      const newCard = { title, description, price, image };
+
+      let properties = JSON.parse(localStorage.getItem("properties")) || [];
+      properties.push(newCard);
+      localStorage.setItem("properties", JSON.stringify(properties));
+
+      alert("تمت إضافة العقار بنجاح!");
+      document.querySelector("form").reset();
+      loadProperties();
+    }
+
+    function checkEmail() {
+      const email = document.getElementById("email").value.trim();
+      if (email === "ayltlwka@gmail.com") {
+        document.getElementById("control-panel").style.display = "block";
+        document.getElementById("login-box").style.display = "none";
+      } else {
+        alert("البريد غير مصرح.");
+      }
+    }
+
+    window.onload = loadProperties;
+  </script>
+
+</body>
+</html>
