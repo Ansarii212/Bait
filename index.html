@@ -4,8 +4,111 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>عقارات جدة</title>
-  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Cairo', sans-serif;
+      background-color: #f4f4f9;
+      color: #333;
+    }
+
+    header {
+      background-color: #2a7ae4;
+      padding: 15px;
+      text-align: center;
+      color: white;
+    }
+
+    header .logo h1 {
+      font-size: 2rem;
+      font-weight: bold;
+    }
+
+    header nav ul {
+      list-style: none;
+      padding: 10px 0;
+    }
+
+    header nav ul li {
+      display: inline-block;
+      margin: 0 15px;
+    }
+
+    header nav ul li a {
+      color: white;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .properties-section {
+      padding: 50px 0;
+      text-align: center;
+    }
+
+    .properties-section h2 {
+      font-size: 2rem;
+      margin-bottom: 30px;
+    }
+
+    .container {
+      width: 90%;
+      margin: 0 auto;
+    }
+
+    .properties {
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+    }
+
+    .property-card {
+      background-color: #fff;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      width: 30%;
+      margin-bottom: 30px;
+      border-radius: 8px;
+      overflow: hidden;
+      text-align: center;
+    }
+
+    .property-card img {
+      width: 100%;
+      height: auto;
+    }
+
+    .property-card h3 {
+      font-size: 1.2rem;
+      margin: 15px 0;
+    }
+
+    .property-card .location {
+      font-size: 1rem;
+      color: #777;
+    }
+
+    .property-card .price {
+      font-size: 1.5rem;
+      color: #2a7ae4;
+      margin: 10px 0;
+    }
+
+    footer {
+      background-color: #2a7ae4;
+      color: white;
+      text-align: center;
+      padding: 15px;
+    }
+
+    footer p {
+      margin: 0;
+      font-size: 1rem;
+    }
+  </style>
   <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js"></script>
 </head>
@@ -36,6 +139,54 @@
     <p>&copy; 2025 جميع الحقوق محفوظة</p>
   </footer>
 
-  <script src="app.js"></script>
+  <script>
+    // إعداد Firebase
+    const firebaseConfig = {
+      apiKey: "AIzaSyCr4T8GLRxtf_6LNrokjKvmBOwSkuGO5yQ",
+      authDomain: "hamsa-6009e.firebaseapp.com",
+      databaseURL: "https://hamsa-6009e-default-rtdb.firebaseio.com",
+      projectId: "hamsa-6009e",
+      storageBucket: "hamsa-6009e.appspot.com",
+      messagingSenderId: "998163671039",
+      appId: "1:998163671039:web:d1930ea5b71a3a3fc729ca",
+      measurementId: "G-PD1QB8X0FE"
+    };
+
+    // Initialize Firebase
+    const app = firebase.initializeApp(firebaseConfig);
+    const database = firebase.database();
+
+    // جلب بيانات العقارات من Firebase وعرضها في الصفحة
+    const propertiesContainer = document.getElementById("properties-container");
+
+    function fetchProperties() {
+      const propertiesRef = database.ref("properties");
+
+      propertiesRef.once("value", (snapshot) => {
+        const properties = snapshot.val();
+        if (properties) {
+          propertiesContainer.innerHTML = ''; // تفريغ الحاوية قبل إضافة البيانات
+          for (const key in properties) {
+            if (properties.hasOwnProperty(key)) {
+              const property = properties[key];
+              const propertyCard = document.createElement("div");
+              propertyCard.classList.add("property-card");
+
+              propertyCard.innerHTML = `
+                <img src="${property.image}" alt="${property.title}">
+                <h3>${property.title}</h3>
+                <p class="location">${property.location}</p>
+                <p class="price">${property.price} ريال</p>
+              `;
+
+              propertiesContainer.appendChild(propertyCard);
+            }
+          }
+        }
+      });
+    }
+
+    window.onload = fetchProperties;
+  </script>
 </body>
 </html>
