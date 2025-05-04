@@ -1,169 +1,41 @@
 <!DOCTYPE html>
 <html lang="ar">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>عقارات سمسار</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f7f7f7;
-      margin: 0;
-      padding: 0;
-    }
-    header {
-      background: #7b4f2c;
-      color: white;
-      padding: 1rem;
-      text-align: center;
-    }
-    .container {
-      max-width: 800px;
-      margin: auto;
-      padding: 1rem;
-    }
-    .login-box {
-      background: white;
-      padding: 2rem;
-      margin-top: 2rem;
-      text-align: center;
-      border-radius: 8px;
-    }
-    input, select, textarea {
-      width: 100%;
-      padding: 0.7rem;
-      margin-bottom: 1rem;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-    }
-    button {
-      padding: 0.7rem 1.5rem;
-      background: #7b4f2c;
-      color: white;
-      border: none;
-      cursor: pointer;
-    }
-    .property {
-      background: white;
-      padding: 1rem;
-      margin-bottom: 1rem;
-      border-left: 5px solid #7b4f2c;
-    }
-    .property img {
-      width: 100%;
-      max-height: 200px;
-      object-fit: cover;
-      margin-bottom: 1rem;
-    }
-    #adminPanel {
-      display: none;
-      background: #fff9f5;
-      padding: 1rem;
-      border: 1px solid #ccc;
-      margin-top: 1rem;
-      border-radius: 8px;
-    }
-  </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>عقارات جدة</title>
+  <link rel="stylesheet" href="styles.css">
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600&display=swap" rel="stylesheet">
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js"></script>
 </head>
 <body>
   <header>
-    <h1>عقارات سمسار</h1>
+    <div class="logo">
+      <h1>عقارات جدة</h1>
+    </div>
+    <nav>
+      <ul>
+        <li><a href="#">الرئيسية</a></li>
+        <li><a href="#">الخصائص</a></li>
+        <li><a href="#">اتصل بنا</a></li>
+      </ul>
+    </nav>
   </header>
 
-  <div class="container">
-    <div class="login-box" id="loginBox">
-      <h2>تسجيل الدخول برقم الجوال</h2>
-      <input type="text" id="phone" placeholder="مثال: 0534553706">
-      <button onclick="login()">تسجيل الدخول</button>
+  <section class="properties-section">
+    <div class="container">
+      <h2>عقارات جدة المميزة</h2>
+      <div class="properties" id="properties-container">
+        <!-- سيتم إضافة العقارات هنا عبر JavaScript -->
+      </div>
     </div>
+  </section>
 
-    <div id="adminPanel">
-      <h3>إضافة عقار جديد</h3>
-      <input type="text" id="type" placeholder="نوع العقار (شقة / أرض)">
-      <input type="text" id="location" placeholder="الموقع">
-      <input type="text" id="price" placeholder="السعر">
-      <textarea id="desc" placeholder="الوصف"></textarea>
-      <input type="text" id="image" placeholder="رابط الصورة">
-      <button onclick="addProperty()">إضافة</button>
-    </div>
+  <footer>
+    <p>&copy; 2025 جميع الحقوق محفوظة</p>
+  </footer>
 
-    <h3 style="margin-top: 2rem;">العقارات المتاحة</h3>
-    <div id="listings"></div>
-  </div>
-
-  <!-- Firebase -->
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
-
-  <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyCr4T8GLRxtf_6LNrokjKvmBOwSkuGO5yQ",
-      authDomain: "hamsa-6009e.firebaseapp.com",
-      databaseURL: "https://hamsa-6009e-default-rtdb.firebaseio.com/",
-      projectId: "hamsa-6009e",
-      storageBucket: "hamsa-6009e.appspot.com",
-      messagingSenderId: "998163671039",
-      appId: "1:998163671039:web:d1930ea5b71a3a3fc729ca"
-    };
-
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
-
-    function login() {
-      const phone = document.getElementById("phone").value.trim();
-      if (phone === "0534553706") {
-        document.getElementById("adminPanel").style.display = "block";
-      } else {
-        document.getElementById("adminPanel").style.display = "none";
-      }
-      document.getElementById("loginBox").style.display = "none";
-    }
-
-    function addProperty() {
-      const type = document.getElementById("type").value;
-      const location = document.getElementById("location").value;
-      const price = document.getElementById("price").value;
-      const desc = document.getElementById("desc").value;
-      const image = document.getElementById("image").value;
-      const newPost = {
-        type,
-        location,
-        price,
-        desc,
-        image,
-        timestamp: Date.now()
-      };
-      db.ref("properties").push(newPost).then(() => {
-        alert("تمت الإضافة بنجاح");
-        displayProperties();
-      });
-    }
-
-    function displayProperties() {
-      db.ref("properties").orderByChild("timestamp").once("value", snapshot => {
-        const listings = document.getElementById("listings");
-        listings.innerHTML = "";
-        const items = [];
-        snapshot.forEach(child => {
-          items.unshift(child.val());
-        });
-        items.forEach(prop => {
-          const div = document.createElement("div");
-          div.className = "property";
-          div.innerHTML = `
-            <img src="${prop.image}" alt="صورة العقار">
-            <h4>${prop.type}</h4>
-            <p><strong>الموقع:</strong> ${prop.location}</p>
-            <p><strong>السعر:</strong> ${prop.price}</p>
-            <p>${prop.desc}</p>
-          `;
-          listings.appendChild(div);
-        });
-      });
-    }
-
-    // Load data on page load
-    displayProperties();
-  </script>
+  <script src="app.js"></script>
 </body>
 </html>
