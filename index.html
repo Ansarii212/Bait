@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>تسجيل دخول Google - سمسار عقاري</title>
+  <title>تسجيل دخول - سمسار عقاري</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -18,12 +18,27 @@
     .login-container {
       background: #fff;
       padding: 2rem;
-      border-radius: 8px;
+      border-radius: 10px;
       text-align: center;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      box-shadow: 0 0 20px rgba(0,0,0,0.1);
+      width: 90%;
+      max-width: 400px;
     }
-    .login-container h2 {
-      margin-bottom: 1rem;
+    h2 {
+      background: #8B4513;
+      color: white;
+      padding: 1rem;
+      border-radius: 8px;
+      margin-bottom: 1.5rem;
+    }
+    button {
+      background: #4285F4;
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 6px;
+      font-size: 16px;
+      cursor: pointer;
     }
     #controlPanel {
       display: none;
@@ -35,28 +50,33 @@
   </style>
 </head>
 <body>
+
   <div class="login-container">
     <h2>تسجيل الدخول باستخدام Google</h2>
-    <button id="googleLogin" style="padding: 10px 20px; font-size: 16px;">تسجيل الدخول</button>
-    
+    <button id="googleLogin">تسجيل الدخول</button>
+
     <div id="controlPanel">
       <h3>مرحبًا بك، يمكنك الآن إدارة العقارات</h3>
-      <!-- لوحة التحكم تظهر هنا -->
+      <!-- هنا يتم إظهار لوحة التحكم -->
     </div>
   </div>
 
-  <!-- Firebase -->
+  <!-- Firebase Scripts -->
   <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
   <script>
+    // إعدادات Firebase من مشروعك
     const firebaseConfig = {
-      apiKey: "YOUR_API_KEY",
-      authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-      projectId: "YOUR_PROJECT_ID",
-      storageBucket: "YOUR_PROJECT_ID.appspot.com",
-      messagingSenderId: "SENDER_ID",
-      appId: "APP_ID"
+      apiKey: "AIzaSyCr4T8GLRxtf_6LNrokjKvmBOwSkuGO5yQ",
+      authDomain: "hamsa-6009e.firebaseapp.com",
+      databaseURL: "https://hamsa-6009e-default-rtdb.firebaseio.com",
+      projectId: "hamsa-6009e",
+      storageBucket: "hamsa-6009e.firebasestorage.app",
+      messagingSenderId: "998163671039",
+      appId: "1:998163671039:web:d1930ea5b71a3a3fc729ca",
+      measurementId: "G-PD1QB8X0FE"
     };
+
     firebase.initializeApp(firebaseConfig);
 
     const provider = new firebase.auth.GoogleAuthProvider();
