@@ -10,6 +10,7 @@
       background: #f7f7f7;
       margin: 0;
       padding: 0;
+      direction: rtl;
     }
     header {
       background: #7b4f2c;
@@ -28,13 +29,15 @@
       margin-top: 2rem;
       text-align: center;
       border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     }
     input, select, textarea {
       width: 100%;
       padding: 0.7rem;
       margin-bottom: 1rem;
       border: 1px solid #ccc;
-      border-radius: 4px;
+      border-radius: 25px;
+      font-size: 1rem;
     }
     button {
       padding: 0.7rem 1.5rem;
@@ -42,12 +45,16 @@
       color: white;
       border: none;
       cursor: pointer;
+      border-radius: 25px;
+      font-size: 1rem;
     }
     .property {
       background: white;
       padding: 1rem;
       margin-bottom: 1rem;
       border-left: 5px solid #7b4f2c;
+      border-radius: 10px;
+      box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
     }
     .property img {
       width: 100%;
@@ -63,6 +70,36 @@
       margin-top: 1rem;
       border-radius: 8px;
     }
+    .error-message {
+      color: red;
+      font-size: 1rem;
+      margin-top: 1rem;
+    }
+    #registerBox {
+      display: none;
+      background: #fff9f5;
+      padding: 1rem;
+      border: 1px solid #ccc;
+      margin-top: 1rem;
+      border-radius: 8px;
+      text-align: center;
+    }
+    #registerBox input {
+      width: 80%;
+      margin-bottom: 1rem;
+    }
+    .button-container {
+      display: flex;
+      justify-content: center;
+      margin-top: 1rem;
+    }
+    .flash {
+      animation: flash 1s infinite;
+    }
+    @keyframes flash {
+      0% { background-color: #ffeb3b; }
+      100% { background-color: transparent; }
+    }
   </style>
 </head>
 <body>
@@ -75,6 +112,13 @@
       <h2>تسجيل الدخول برقم الجوال</h2>
       <input type="text" id="phone" placeholder="مثال: 0534553706">
       <button onclick="login()">تسجيل الدخول</button>
+      <div id="errorMessage" class="error-message"></div>
+    </div>
+
+    <div id="registerBox">
+      <h3>ليس لديك حساب؟</h3>
+      <input type="text" id="registerPhone" placeholder="أدخل رقم الجوال">
+      <button onclick="savePhone()">حفظ</button>
     </div>
 
     <div id="adminPanel">
@@ -111,12 +155,35 @@
 
     function login() {
       const phone = document.getElementById("phone").value.trim();
-      if (phone === "0534553706") {
+      const adminPhone = "0534553706";
+      if (phone === adminPhone) {
         document.getElementById("adminPanel").style.display = "block";
+        document.getElementById("loginBox").style.display = "none";
+        document.getElementById("registerBox").style.display = "none";
       } else {
-        document.getElementById("adminPanel").style.display = "none";
+        db.ref("users").child(phone).once("value", snapshot => {
+          if (snapshot.exists()) {
+            document.getElementById("adminPanel").style.display = "none";
+            document.getElementById("loginBox").style.display = "none";
+            document.getElementById("registerBox").style.display = "none";
+            displayProperties();
+          } else {
+            document.getElementById("errorMessage").innerText = "ليس لديك حساب، يرجى التسجيل لتتمكن من الدخول";
+            document.getElementById("registerBox").style.display = "block";
+          }
+        });
       }
-      document.getElementById("loginBox").style.display = "none";
+    }
+
+    function savePhone() {
+      const phone = document.getElementById("registerPhone").value.trim();
+      if (phone) {
+        db.ref("users").child(phone).set({ phone }).then(() => {
+          alert("تم التسجيل بنجاح");
+          document.getElementById("registerBox").style.display = "none";
+          document.getElementById("loginBox").style.display = "block";
+        });
+      }
     }
 
     function addProperty() {
@@ -149,7 +216,7 @@
         });
         items.forEach(prop => {
           const div = document.createElement("div");
-          div.className = "property";
+          div.className = "property flash";
           div.innerHTML = `
             <img src="${prop.image}" alt="صورة العقار">
             <h4>${prop.type}</h4>
