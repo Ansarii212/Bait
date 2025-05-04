@@ -1,181 +1,127 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="ar">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>تسجيل الدخول وإدارة العقارات</title>
-  <!-- Firebase SDKs -->
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+  <title>إضافة عقار</title>
   <style>
     body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      background: #f5f5f5;
-    }
-    .login-screen {
-      height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      background: #fff;
-    }
-    .login-box {
-      background: #eee;
+      font-family: 'Tahoma', sans-serif;
+      direction: rtl;
+      background: #f2f2f2;
       padding: 30px;
-      border-radius: 10px;
-      text-align: center;
-      box-shadow: 0 0 10px rgba(0,0,0,0.2);
     }
-    .login-box select,
-    .login-box input {
+
+    .container {
+      max-width: 600px;
+      margin: auto;
+      background: white;
+      padding: 25px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
+    h2 {
+      text-align: center;
+      color: #444;
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      margin: 12px 0 6px;
+      color: #333;
+    }
+
+    input, textarea {
       width: 100%;
       padding: 10px;
-      margin: 10px 0;
-    }
-    #main-content {
-      display: none;
-      padding: 20px;
-    }
-    .property {
-      background: #fff;
       border: 1px solid #ccc;
-      border-radius: 8px;
-      margin-bottom: 20px;
-      padding: 15px;
+      border-radius: 6px;
     }
-    .property img {
-      width: 100%;
-      height: auto;
-      border-radius: 5px;
-    }
-    .add-form {
-      display: none;
-      margin-bottom: 30px;
-      background: #fff8f0;
-      padding: 20px;
-      border: 2px solid #a97446;
-      border-radius: 8px;
-    }
-    .add-form input,
-    .add-form textarea {
-      display: block;
-      width: 100%;
-      margin-bottom: 10px;
-      padding: 8px;
-    }
+
     button {
-      background: #a97446;
-      color: #fff;
-      padding: 10px 20px;
+      margin-top: 20px;
+      background: brown;
+      color: white;
+      padding: 12px;
+      width: 100%;
       border: none;
       border-radius: 6px;
-      cursor: pointer;
+      font-size: 16px;
+    }
+
+    .success {
+      color: green;
+      text-align: center;
+      margin-top: 15px;
     }
   </style>
 </head>
 <body>
 
-<div class="login-screen" id="loginScreen">
-  <div class="login-box">
-    <h2>تسجيل الدخول</h2>
-    <select id="countryCode">
-      <option value="+966">السعودية (+966)</option>
-    </select>
-    <input type="text" id="phoneInput" placeholder="أدخل رقم الجوال بدون صفر في البداية" />
-    <button onclick="login()">دخول</button>
+  <div class="container">
+    <h2>إضافة عقار</h2>
+    <label>نوع العقار</label>
+    <input type="text" id="type" placeholder="مثلاً: شقة أو أرض" />
+
+    <label>الموقع</label>
+    <input type="text" id="location" placeholder="مثلاً: الرياض" />
+
+    <label>السعر</label>
+    <input type="text" id="price" placeholder="مثلاً: 500000" />
+
+    <label>الوصف</label>
+    <textarea id="description" placeholder="مثلاً: شقة 3 غرف وصالة"></textarea>
+
+    <label>رابط الصورة</label>
+    <input type="text" id="imageUrl" placeholder="مثلاً: https://link.to/image.jpg" />
+
+    <button onclick="submitProperty()">إرسال</button>
+
+    <div class="success" id="message"></div>
   </div>
-</div>
 
-<div id="main-content">
-  <div id="addForm" class="add-form">
-    <h3>إضافة عقار جديد</h3>
-    <input type="text" id="type" placeholder="نوع العقار (شقة أو أرض)" />
-    <input type="text" id="title" placeholder="عنوان العقار" />
-    <textarea id="description" placeholder="وصف العقار"></textarea>
-    <input type="text" id="image" placeholder="رابط الصورة" />
-    <input type="text" id="price" placeholder="السعر" />
-    <input type="text" id="location" placeholder="الموقع" />
-    <button onclick="addProperty()">إضافة</button>
-  </div>
+  <!-- Firebase CDN -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
-  <div id="properties"></div>
-</div>
-
-<script>
-  // Firebase Config
-  const firebaseConfig = {
-    apiKey: "AIzaSyCr4T8GLRxtf_6LNrokjKvmBOwSkuGO5yQ",
-    authDomain: "hamsa-6009e.firebaseapp.com",
-    databaseURL: "https://hamsa-6009e-default-rtdb.firebaseio.com",
-    projectId: "hamsa-6009e",
-    storageBucket: "hamsa-6009e.appspot.com",
-    messagingSenderId: "998163671039",
-    appId: "1:998163671039:web:d1930ea5b71a3a3fc729ca",
-  };
-
-  firebase.initializeApp(firebaseConfig);
-  const db = firebase.database();
-
-  let isAdmin = false;
-
-  function login() {
-    const code = document.getElementById("countryCode").value;
-    const phone = document.getElementById("phoneInput").value.trim();
-    const fullNumber = code + phone;
-
-    if (phone === "534553706") {
-      isAdmin = true;
-      document.getElementById("addForm").style.display = "block";
-    }
-
-    document.getElementById("loginScreen").style.display = "none";
-    document.getElementById("main-content").style.display = "block";
-
-    loadProperties();
-  }
-
-  function addProperty() {
-    const property = {
-      type: document.getElementById("type").value,
-      title: document.getElementById("title").value,
-      description: document.getElementById("description").value,
-      price: document.getElementById("price").value,
-      location: document.getElementById("location").value,
-      image: document.getElementById("image").value,
-      createdAt: Date.now()
+  <script>
+    // Your Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyCr4T8GLRxtf_6LNrokjKvmBOwSkuGO5yQ",
+      authDomain: "hamsa-6009e.firebaseapp.com",
+      databaseURL: "https://hamsa-6009e-default-rtdb.firebaseio.com",
+      projectId: "hamsa-6009e",
+      storageBucket: "hamsa-6009e.appspot.com",
+      messagingSenderId: "998163671039",
+      appId: "1:998163671039:web:d1930ea5b71a3a3fc729ca"
     };
 
-    db.ref("properties").push(property).then(() => {
-      alert("تمت الإضافة بنجاح");
-      loadProperties();
-    });
-  }
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const database = firebase.database();
 
-  function loadProperties() {
-    db.ref("properties").orderByChild("createdAt").once("value", snapshot => {
-      const container = document.getElementById("properties");
-      container.innerHTML = "";
-      let data = [];
-      snapshot.forEach(child => {
-        data.push(child.val());
-      });
-      data.reverse().forEach(p => {
-        const div = document.createElement("div");
-        div.className = "property";
-        div.innerHTML = `
-          <h4>${p.title}</h4>
-          <p><strong>النوع:</strong> ${p.type}</p>
-          <p><strong>الوصف:</strong> ${p.description}</p>
-          <p><strong>السعر:</strong> ${p.price} ريال</p>
-          <p><strong>الموقع:</strong> ${p.location}</p>
-          ${p.image ? `<img src="${p.image}" />` : ""}
-        `;
-        container.appendChild(div);
-      });
-    });
-  }
-</script>
+    function submitProperty() {
+      const property = {
+        type: document.getElementById('type').value,
+        location: document.getElementById('location').value,
+        price: document.getElementById('price').value,
+        description: document.getElementById('description').value,
+        imageUrl: document.getElementById('imageUrl').value,
+        timestamp: Date.now()
+      };
+
+      firebase.database().ref("properties").push(property)
+        .then(() => {
+          document.getElementById('message').textContent = 'تمت إضافة العقار بنجاح!';
+        })
+        .catch(err => {
+          document.getElementById('message').textContent = 'حدث خطأ أثناء الإضافة';
+          console.error(err);
+        });
+    }
+  </script>
 
 </body>
 </html>
