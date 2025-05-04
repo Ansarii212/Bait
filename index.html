@@ -108,24 +108,94 @@
       margin: 0;
       font-size: 1rem;
     }
+
+    .login-section {
+      text-align: center;
+      padding: 100px 0;
+    }
+
+    .login-section input {
+      padding: 10px;
+      margin: 10px 0;
+      width: 80%;
+      max-width: 300px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
+    .login-section button {
+      padding: 10px;
+      background-color: #2a7ae4;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .control-panel {
+      padding: 50px 0;
+      background-color: #fff;
+    }
+
+    .control-panel h3 {
+      font-size: 2rem;
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .control-panel input,
+    .control-panel textarea {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 1rem;
+    }
+
+    .control-panel button {
+      padding: 12px;
+      background-color: #2a7ae4;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 1rem;
+      width: 100%;
+    }
+
   </style>
   <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js"></script>
 </head>
 <body>
+
   <header>
     <div class="logo">
       <h1>عقارات جدة</h1>
     </div>
-    <nav>
-      <ul>
-        <li><a href="#">الرئيسية</a></li>
-        <li><a href="#">الخصائص</a></li>
-        <li><a href="#">اتصل بنا</a></li>
-      </ul>
-    </nav>
   </header>
 
+  <!-- قسم تسجيل الدخول -->
+  <div class="login-section" id="login-section">
+    <h2>تسجيل الدخول</h2>
+    <input type="email" id="email" placeholder="أدخل بريدك الإلكتروني" required>
+    <button onclick="login()">تسجيل الدخول</button>
+  </div>
+
+  <!-- لوحة التحكم -->
+  <div class="control-panel" id="control-panel" style="display: none;">
+    <h3>إضافة عقار جديد</h3>
+    <input type="text" id="title" placeholder="عنوان العقار" required>
+    <textarea id="description" placeholder="وصف العقار" rows="4" required></textarea>
+    <input type="text" id="location" placeholder="الموقع" required>
+    <input type="number" id="price" placeholder="السعر" required>
+    <input type="url" id="image" placeholder="رابط الصورة" required>
+    <button onclick="addProperty()">إضافة العقار</button>
+  </div>
+
+  <!-- قسم العقارات -->
   <section class="properties-section">
     <div class="container">
       <h2>عقارات جدة المميزة</h2>
@@ -155,17 +225,59 @@
     // Initialize Firebase
     const app = firebase.initializeApp(firebaseConfig);
     const database = firebase.database();
+    const auth = firebase.auth();
 
-    // جلب بيانات العقارات من Firebase وعرضها في الصفحة
-    const propertiesContainer = document.getElementById("properties-container");
+    // تسجيل الدخول عبر البريد الإلكتروني
+    function login() {
+      const email = document.getElementById("email").value;
+      if (email) {
+        auth.signInWithEmailAndPassword(email, "password")
+          .then(() => {
+            document.getElementById("login-section").style.display = "none";
+            document.getElementById("control-panel").style.display = "block";
+            fetchProperties(); // جلب العقارات بعد تسجيل الدخول
+          })
+          .catch((error) => {
+            alert("فشل تسجيل الدخول: " + error.message);
+          });
+      }
+    }
 
+    // إضافة العقار إلى Firebase
+    function addProperty() {
+      const title = document.getElementById("title").value;
+      const description = document.getElementById("description").value;
+      const location = document.getElementById("location").value;
+      const price = document.getElementById("price").value;
+      const image = document.getElementById("image").value;
+
+      const propertyRef = database.ref('properties').push();
+      propertyRef.set({
+        title: title,
+        description: description,
+        location: location,
+        price: price,
+        image: image
+      })
+      .then(() => {
+        alert("تم إضافة العقار بنجاح!");
+        fetchProperties(); // إعادة تحميل العقارات بعد إضافة جديد
+      })
+      .catch((error) => {
+        alert("حدث خطأ أثناء إضافة العقار: " + error.message);
+      });
+    }
+
+    // جلب العقارات من Firebase
     function fetchProperties() {
       const propertiesRef = database.ref("properties");
 
       propertiesRef.once("value", (snapshot) => {
         const properties = snapshot.val();
+        const propertiesContainer = document.getElementById("properties-container");
+        propertiesContainer.innerHTML = ''; // تفريغ الحاوية قبل إضافة البيانات
+
         if (properties) {
-          propertiesContainer.innerHTML = ''; // تفريغ الحاوية قبل إضافة البيانات
           for (const key in properties) {
             if (properties.hasOwnProperty(key)) {
               const property = properties[key];
@@ -173,20 +285,4 @@
               propertyCard.classList.add("property-card");
 
               propertyCard.innerHTML = `
-                <img src="${property.image}" alt="${property.title}">
-                <h3>${property.title}</h3>
-                <p class="location">${property.location}</p>
-                <p class="price">${property.price} ريال</p>
-              `;
-
-              propertiesContainer.appendChild(propertyCard);
-            }
-          }
-        }
-      });
-    }
-
-    window.onload = fetchProperties;
-  </script>
-</body>
-</html>
+                <img src="${property.image}" alt="${
