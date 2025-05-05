@@ -6,8 +6,8 @@
   <title>عقارات جدة</title>
   <style>
     body {
-      font-family: Arial, sans-serif;
-      background: #fdfaf5;
+      font-family: 'Arial', sans-serif;
+      background: #f9f4ef;
       margin: 0;
       padding: 0;
       direction: rtl;
@@ -19,143 +19,167 @@
       text-align: center;
       position: relative;
     }
-    #logoutBtn {
+    .logout-btn {
       position: absolute;
       left: 1rem;
       top: 1rem;
       background: white;
       color: #7b4f2c;
-      border: 1px solid #7b4f2c;
-      border-radius: 20px;
-      padding: 5px 10px;
+      border: none;
+      padding: 0.5rem 1rem;
       cursor: pointer;
+      border-radius: 4px;
     }
     .container {
       max-width: 800px;
       margin: auto;
       padding: 1rem;
     }
-    .box {
-      background: white;
-      padding: 2rem;
-      margin-top: 2rem;
-      border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.05);
-    }
     input, select, textarea {
       width: 100%;
       padding: 0.7rem;
       margin-bottom: 1rem;
       border: 1px solid #ccc;
-      border-radius: 20px;
-      text-align: right;
+      border-radius: 8px;
+      background: #fff9f3;
+      color: #333;
+    }
+    select {
+      background-color: #7b4f2c;
+      color: white;
     }
     button {
       padding: 0.7rem 1.5rem;
       background: #7b4f2c;
       color: white;
       border: none;
-      border-radius: 20px;
       cursor: pointer;
+      border-radius: 8px;
+    }
+    .login-box {
+      background: white;
+      padding: 2rem;
+      margin-top: 2rem;
+      text-align: center;
+      border-radius: 8px;
     }
     .property {
-      background: #fff8f2;
+      background: white;
       padding: 1rem;
       margin-bottom: 1rem;
-      border-radius: 10px;
-      border: 1px solid #e0d4c2;
+      border-left: 5px solid #7b4f2c;
+      border-radius: 8px;
     }
     .property img {
       width: 100%;
-      max-height: 250px;
-      object-fit: contain;
-      border-radius: 10px;
-      background: #f5ebe1;
-      margin-bottom: 0.5rem;
+      max-height: 200px;
+      object-fit: cover;
+      background: #f2e9e4;
+      border-radius: 6px;
+      margin-bottom: 1rem;
     }
     .share-btn {
-      background: #ddd;
-      color: #333;
-      border-radius: 20px;
-      padding: 5px 10px;
-      margin-top: 5px;
+      background: #7b4f2c;
+      color: white;
+      border: none;
+      padding: 0.4rem 0.8rem;
+      border-radius: 6px;
+      margin-top: 0.5rem;
       float: left;
-      cursor: pointer;
     }
     .filter-bar {
-      margin-bottom: 1rem;
       display: flex;
-      gap: 10px;
       flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
     }
     .filter-bar select {
       flex: 1;
-      padding: 0.5rem;
-      border-radius: 20px;
-    }
-    .highlight {
-      color: red;
-      margin-top: 1rem;
     }
   </style>
 </head>
 <body>
+
   <header>
-    <h2>عقارات جدة</h2>
-    <div id="userPhoneDisplay"></div>
-    <button id="logoutBtn" style="display:none" onclick="logout()">تسجيل خروج</button>
+    <h1>عقارات جدة</h1>
+    <button class="logout-btn" onclick="logout()">تسجيل الخروج</button>
   </header>
 
   <div class="container">
-
-    <div class="box" id="loginBox">
-      <h3>تسجيل الدخول برقم الجوال</h3>
-      <input type="text" id="phone" placeholder="أدخل رقم جوالك">
-      <div class="highlight" id="loginNote" style="display:none">ليس لديك حساب، الرجاء التسجيل</div>
-      <button onclick="login()">دخول</button>
-      <button onclick="showRegister()" id="showRegBtn" style="display:none">تسجيل جديد</button>
+    <div id="loginBox" class="login-box">
+      <h2>تسجيل الدخول برقم الجوال</h2>
+      <input type="text" id="phone" placeholder="مثال: 0534553706">
+      <button onclick="login()">تسجيل الدخول</button>
+      <p id="loginNote" style="color: red;"></p>
+      <div id="registerBox" style="display:none;">
+        <input type="text" id="newUserPhone" placeholder="أدخل رقمك للتسجيل">
+        <button onclick="register()">تسجيل</button>
+      </div>
     </div>
 
-    <div class="box" id="registerBox" style="display:none; background:#fff0e0">
-      <h3>تسجيل مستخدم جديد</h3>
-      <input type="text" id="newPhone" placeholder="أدخل رقم جوالك للتسجيل">
-      <button onclick="registerUser()">حفظ</button>
-    </div>
-
-    <div class="box" id="adminPanel" style="display:none">
+    <div id="adminPanel" style="display:none;">
       <h3>إضافة عقار جديد</h3>
       <select id="type">
-        <option value="">اختر نوع العقار</option>
-        <option value="شقة">شقة</option>
-        <option value="فيلا">فيلا</option>
-        <option value="أرض">أرض</option>
+        <option>شقة</option>
+        <option>فيلا</option>
+        <option>أرض</option>
       </select>
-      <input type="text" id="location" placeholder="الموقع">
+      <select id="district">
+        <option>الصفا</option>
+        <option>السلامة</option>
+        <option>الفيصلية</option>
+        <option>الروضة</option>
+        <option>النزهة</option>
+        <option>الحمراء</option>
+        <option>المروة</option>
+        <option>البوادي</option>
+        <option>بني مالك</option>
+        <option>العزيزية</option>
+        <option>الرحاب</option>
+        <option>الشاطئ</option>
+        <option>النهضة</option>
+        <option>الجامعة</option>
+      </select>
       <input type="text" id="price" placeholder="السعر">
+      <input type="text" id="code" placeholder="كود الإعلان">
       <textarea id="desc" placeholder="الوصف"></textarea>
       <input type="text" id="image" placeholder="رابط الصورة">
-      <input type="text" id="code" placeholder="كود الإعلان">
       <button onclick="addProperty()">إضافة</button>
     </div>
 
-    <div class="filter-bar" id="filterBar" style="display:none">
-      <select onchange="filterProperties()" id="sortSelect">
-        <option value="latest">الأحدث</option>
-        <option value="oldest">الأقدم</option>
+    <div id="filters" class="filter-bar" style="display:none;">
+      <select onchange="filterProperties()" id="sortFilter">
+        <option value="new">الأحدث</option>
+        <option value="old">الأقدم</option>
         <option value="high">الأغلى</option>
         <option value="low">الأرخص</option>
       </select>
-      <select onchange="filterProperties()" id="locationFilter">
-        <option value="">كل المواقع</option>
+      <select onchange="filterProperties()" id="districtFilter">
+        <option value="">كل الأحياء</option>
+        <option>الصفا</option>
+        <option>السلامة</option>
+        <option>الفيصلية</option>
+        <option>الروضة</option>
+        <option>النزهة</option>
+        <option>الحمراء</option>
+        <option>المروة</option>
+        <option>البوادي</option>
+        <option>بني مالك</option>
+        <option>العزيزية</option>
+        <option>الرحاب</option>
+        <option>الشاطئ</option>
+        <option>النهضة</option>
+        <option>الجامعة</option>
       </select>
     </div>
 
     <div id="listings"></div>
-
   </div>
 
+  <!-- Firebase -->
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+
   <script>
     const firebaseConfig = {
       apiKey: "AIzaSyCr4T8GLRxtf_6LNrokjKvmBOwSkuGO5yQ",
@@ -166,65 +190,39 @@
       messagingSenderId: "998163671039",
       appId: "1:998163671039:web:d1930ea5b71a3a3fc729ca"
     };
+
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    let currentUser = null;
-    let allProperties = [];
-
-    window.onload = () => {
-      const savedUser = localStorage.getItem("phone");
-      if (savedUser) {
-        currentUser = savedUser;
-        document.getElementById("phone").value = savedUser;
-        afterLogin();
-      }
-    };
+    let currentUser = localStorage.getItem("currentUser") || "";
+    let properties = [];
 
     function login() {
       const phone = document.getElementById("phone").value.trim();
       if (!phone) return;
-      db.ref("users").orderByValue().equalTo(phone).once("value", snap => {
-        if (snap.exists() || phone === "0534553706") {
+      document.getElementById("loginBox").style.display = "none";
+      db.ref("users").once("value", snapshot => {
+        const users = snapshot.val() || {};
+        if (phone === "0534553706") {
+          document.getElementById("adminPanel").style.display = "block";
+        }
+        if (users[phone] || phone === "0534553706") {
           currentUser = phone;
-          localStorage.setItem("phone", phone);
-          afterLogin();
+          localStorage.setItem("currentUser", phone);
+          document.getElementById("filters").style.display = "flex";
+          displayProperties();
         } else {
-          document.getElementById("loginNote").style.display = "block";
-          document.getElementById("showRegBtn").style.display = "inline-block";
+          document.getElementById("loginNote").innerText = "ليس لديك حساب. رجاء التسجيل لتتمكن من الدخول";
+          document.getElementById("registerBox").style.display = "block";
+          document.getElementById("loginBox").style.display = "block";
         }
       });
     }
 
-    function afterLogin() {
-      document.getElementById("loginBox").style.display = "none";
-      document.getElementById("registerBox").style.display = "none";
-      document.getElementById("listings").style.display = "block";
-      document.getElementById("filterBar").style.display = "flex";
-      document.getElementById("logoutBtn").style.display = "block";
-      document.getElementById("userPhoneDisplay").innerText = currentUser;
-      if (currentUser === "0534553706") {
-        document.getElementById("adminPanel").style.display = "block";
-      }
-      displayProperties();
-    }
-
-    function logout() {
-      if (confirm("هل تريد تسجيل الخروج؟")) {
-        localStorage.removeItem("phone");
-        location.reload();
-      }
-    }
-
-    function showRegister() {
-      document.getElementById("loginBox").style.display = "none";
-      document.getElementById("registerBox").style.display = "block";
-    }
-
-    function registerUser() {
-      const newPhone = document.getElementById("newPhone").value.trim();
-      if (!newPhone) return;
-      db.ref("users").push(newPhone).then(() => {
+    function register() {
+      const phone = document.getElementById("newUserPhone").value.trim();
+      if (!phone) return;
+      db.ref("users/" + phone).set({ registered: true }, () => {
         alert("تم التسجيل بنجاح");
         location.reload();
       });
@@ -232,81 +230,91 @@
 
     function addProperty() {
       const type = document.getElementById("type").value;
-      const location = document.getElementById("location").value;
+      const district = document.getElementById("district").value;
       const price = document.getElementById("price").value;
       const desc = document.getElementById("desc").value;
       const image = document.getElementById("image").value;
       const code = document.getElementById("code").value;
-      if (!type || !location || !price || !desc || !image) return;
-      const newAd = { type, location, price, desc, image, code, timestamp: Date.now() };
-      db.ref("properties").push(newAd).then(() => {
+      const newPost = {
+        type, district, price, desc, image, code,
+        timestamp: Date.now()
+      };
+      db.ref("properties").push(newPost).then(() => {
+        alert("تمت الإضافة بنجاح");
         displayProperties();
-        document.querySelectorAll("#adminPanel input, #adminPanel textarea, #adminPanel select").forEach(e => e.value = "");
       });
     }
 
     function displayProperties() {
-      db.ref("properties").once("value", snap => {
-        const container = document.getElementById("listings");
-        container.innerHTML = "";
-        allProperties = [];
-        let locationSet = new Set();
-        snap.forEach(child => {
-          const prop = child.val();
-          allProperties.push(prop);
-          locationSet.add(prop.location);
+      db.ref("properties").once("value", snapshot => {
+        properties = [];
+        snapshot.forEach(child => {
+          properties.push(child.val());
         });
-        updateLocationFilter([...locationSet]);
-        filterProperties();
+        renderProperties();
       });
     }
 
-    function updateLocationFilter(locations) {
-      const select = document.getElementById("locationFilter");
-      select.innerHTML = `<option value="">كل المواقع</option>`;
-      locations.forEach(loc => {
-        const opt = document.createElement("option");
-        opt.value = loc;
-        opt.textContent = loc;
-        select.appendChild(opt);
-      });
-    }
+    function renderProperties() {
+      const sort = document.getElementById("sortFilter").value;
+      const district = document.getElementById("districtFilter").value;
+      let filtered = [...properties];
 
-    function filterProperties() {
-      const sort = document.getElementById("sortSelect").value;
-      const loc = document.getElementById("locationFilter").value;
-      let filtered = [...allProperties];
-      if (loc) filtered = filtered.filter(p => p.location === loc);
-      if (sort === "latest") filtered.sort((a, b) => b.timestamp - a.timestamp);
-      else if (sort === "oldest") filtered.sort((a, b) => a.timestamp - b.timestamp);
-      else if (sort === "high") filtered.sort((a, b) => parseFloat(b.price) - parseFloat(a.price));
-      else if (sort === "low") filtered.sort((a, b) => parseFloat(a.price) - parseFloat(b.price));
+      if (district) {
+        filtered = filtered.filter(p => p.district === district);
+      }
 
-      const container = document.getElementById("listings");
-      container.innerHTML = "";
-      filtered.forEach(p => {
+      if (sort === "new") filtered.sort((a, b) => b.timestamp - a.timestamp);
+      if (sort === "old") filtered.sort((a, b) => a.timestamp - b.timestamp);
+      if (sort === "high") filtered.sort((a, b) => b.price - a.price);
+      if (sort === "low") filtered.sort((a, b) => a.price - b.price);
+
+      const listings = document.getElementById("listings");
+      listings.innerHTML = "";
+      filtered.forEach(prop => {
         const div = document.createElement("div");
         div.className = "property";
         div.innerHTML = `
-          <img src="${p.image}" alt="صورة العقار">
-          <h4>${p.type} - ${p.code || "بدون كود"}</h4>
-          <p><strong>الموقع:</strong> ${p.location}</p>
-          <p><strong>السعر:</strong> ${p.price}</p>
-          <p><strong>الوصف:</strong> ${p.desc}</p>
-          <div class="share-btn" onclick="share('${p.type}', '${p.location}', '${p.price}')">مشاركة</div>
+          <img src="${prop.image}" alt="صورة العقار">
+          <h4>${prop.type}</h4>
+          <p><strong>الحي:</strong> ${prop.district}</p>
+          <p><strong>السعر:</strong> ${prop.price}</p>
+          <p><strong>الوصف:</strong> ${prop.desc}</p>
+          <p><strong>الكود:</strong> ${prop.code} 
+            <button class="share-btn" onclick="share('${prop.code}', '${prop.desc}')">مشاركة</button>
+          </p>
         `;
-        container.appendChild(div);
+        listings.appendChild(div);
       });
     }
 
-    function share(type, location, price) {
-      const text = `عقار ${type} في ${location} بسعر ${price}`;
-      if (navigator.share) {
-        navigator.share({ title: "عقار مميز", text });
-      } else {
-        alert("انسخ النص وشاركه: " + text);
+    function share(code, desc) {
+      const text = `إعلان رقم ${code}: ${desc}\nرابط الصفحة: ${window.location.href}`;
+      navigator.share ? navigator.share({ text }) : alert("انسخ الرابط: " + text);
+    }
+
+    function logout() {
+      if (confirm("هل تريد تسجيل الخروج؟")) {
+        localStorage.removeItem("currentUser");
+        location.reload();
+      }
+    }
+
+    function filterProperties() {
+      renderProperties();
+    }
+
+    window.onload = () => {
+      if (currentUser) {
+        document.getElementById("loginBox").style.display = "none";
+        if (currentUser === "0534553706") {
+          document.getElementById("adminPanel").style.display = "block";
+        }
+        document.getElementById("filters").style.display = "flex";
+        displayProperties();
       }
     }
   </script>
+
 </body>
 </html>
