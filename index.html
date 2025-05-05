@@ -1,320 +1,197 @@
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>عقارات جدة</title>
   <style>
     body {
-      font-family: 'Arial', sans-serif;
-      background: #f9f4ef;
+      font-family: 'Tahoma', sans-serif;
+      background-color: #f9f6f1;
       margin: 0;
       padding: 0;
       direction: rtl;
     }
     header {
-      background: #7b4f2c;
+      background-color: #5D4037;
       color: white;
-      padding: 1rem;
-      text-align: center;
-      position: relative;
+      padding: 10px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
     .logout-btn {
-      position: absolute;
-      left: 1rem;
-      top: 1rem;
-      background: white;
-      color: #7b4f2c;
+      background-color: #fff;
+      color: #5D4037;
       border: none;
-      padding: 0.5rem 1rem;
+      padding: 4px 8px;
+      font-size: 12px;
       cursor: pointer;
-      border-radius: 4px;
     }
     .container {
-      max-width: 800px;
-      margin: auto;
-      padding: 1rem;
+      padding: 20px;
     }
-    input, select, textarea {
-      width: 100%;
-      padding: 0.7rem;
-      margin-bottom: 1rem;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      background: #fff9f3;
-      color: #333;
-    }
-    select {
-      background-color: #7b4f2c;
-      color: white;
-    }
-    button {
-      padding: 0.7rem 1.5rem;
-      background: #7b4f2c;
-      color: white;
-      border: none;
-      cursor: pointer;
-      border-radius: 8px;
-    }
-    .login-box {
-      background: white;
-      padding: 2rem;
-      margin-top: 2rem;
+    h1 {
       text-align: center;
-      border-radius: 8px;
+      color: #5D4037;
+    }
+    .logged-in-info {
+      text-align: center;
+      margin-top: -10px;
+      color: #888;
+      font-size: 14px;
+    }
+    .filters {
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+      gap: 10px;
+    }
+    select, .filter-type {
+      background-color: #5D4037;
+      color: white;
+      padding: 10px;
+      border: none;
+      border-radius: 5px;
+      font-size: 14px;
     }
     .property {
-      background: white;
-      padding: 1rem;
-      margin-bottom: 1rem;
-      border-left: 5px solid #7b4f2c;
+      background-color: white;
       border-radius: 8px;
+      padding: 15px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
     }
-    .property img {
+    .property-type {
+      background-color: #5D4037;
+      color: white;
+      padding: 5px 10px;
+      display: inline-block;
+      margin-bottom: 10px;
+      border-radius: 4px;
+      font-size: 14px;
+    }
+    .property-image {
       width: 100%;
-      max-height: 200px;
-      object-fit: cover;
-      background: #f2e9e4;
-      border-radius: 6px;
-      margin-bottom: 1rem;
+      max-height: 300px;
+      object-fit: contain;
+      border-radius: 5px;
+      margin-bottom: 10px;
     }
-    .share-btn {
-      background: #7b4f2c;
+    .code-container {
+      background-color: #e0e0e0;
+      padding: 5px 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-radius: 4px;
+      font-size: 14px;
+      margin-bottom: 10px;
+    }
+    .copy-btn {
+      background-color: #888;
       color: white;
       border: none;
-      padding: 0.4rem 0.8rem;
-      border-radius: 6px;
-      margin-top: 0.5rem;
-      float: left;
+      padding: 4px 8px;
+      cursor: pointer;
+      font-size: 12px;
     }
-    .filter-bar {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.5rem;
-      margin-bottom: 1.5rem;
-    }
-    .filter-bar select {
-      flex: 1;
+    .share-btn {
+      background-color: #5D4037;
+      color: white;
+      border: none;
+      padding: 6px 12px;
+      cursor: pointer;
+      font-size: 14px;
+      border-radius: 4px;
+      margin-right: 10px;
     }
   </style>
 </head>
 <body>
-
   <header>
-    <h1>عقارات جدة</h1>
-    <button class="logout-btn" onclick="logout()">تسجيل الخروج</button>
+    <h2>عقارات جدة</h2>
+    <button class="logout-btn">تسجيل خروج</button>
   </header>
+  <div class="logged-in-info">تم تسجيل الدخول برقم: 0501234567</div>
 
   <div class="container">
-    <div id="loginBox" class="login-box">
-      <h2>تسجيل الدخول برقم الجوال</h2>
-      <input type="text" id="phone" placeholder="مثال: 0534553706">
-      <button onclick="login()">تسجيل الدخول</button>
-      <p id="loginNote" style="color: red;"></p>
-      <div id="registerBox" style="display:none;">
-        <input type="text" id="newUserPhone" placeholder="أدخل رقمك للتسجيل">
-        <button onclick="register()">تسجيل</button>
-      </div>
-    </div>
-
-    <div id="adminPanel" style="display:none;">
-      <h3>إضافة عقار جديد</h3>
-      <select id="type">
+    <div class="filters">
+      <select class="filter-type">
+        <option>الكل</option>
         <option>شقة</option>
         <option>فيلا</option>
         <option>أرض</option>
       </select>
-      <select id="district">
+      <select>
+        <option disabled selected>اختر الحي</option>
         <option>الصفا</option>
-        <option>السلامة</option>
-        <option>الفيصلية</option>
-        <option>الروضة</option>
-        <option>النزهة</option>
-        <option>الحمراء</option>
-        <option>المروة</option>
+        <option>النسيم</option>
+        <option>الفيحاء</option>
         <option>البوادي</option>
-        <option>بني مالك</option>
-        <option>العزيزية</option>
-        <option>الرحاب</option>
-        <option>الشاطئ</option>
-        <option>النهضة</option>
-        <option>الجامعة</option>
-      </select>
-      <input type="text" id="price" placeholder="السعر">
-      <input type="text" id="code" placeholder="كود الإعلان">
-      <textarea id="desc" placeholder="الوصف"></textarea>
-      <input type="text" id="image" placeholder="رابط الصورة">
-      <button onclick="addProperty()">إضافة</button>
-    </div>
-
-    <div id="filters" class="filter-bar" style="display:none;">
-      <select onchange="filterProperties()" id="sortFilter">
-        <option value="new">الأحدث</option>
-        <option value="old">الأقدم</option>
-        <option value="high">الأغلى</option>
-        <option value="low">الأرخص</option>
-      </select>
-      <select onchange="filterProperties()" id="districtFilter">
-        <option value="">كل الأحياء</option>
-        <option>الصفا</option>
         <option>السلامة</option>
-        <option>الفيصلية</option>
-        <option>الروضة</option>
-        <option>النزهة</option>
-        <option>الحمراء</option>
-        <option>المروة</option>
-        <option>البوادي</option>
+        <option>الربوة</option>
         <option>بني مالك</option>
-        <option>العزيزية</option>
+        <option>المروة</option>
         <option>الرحاب</option>
+        <option>النزهة</option>
+        <option>المحمدية</option>
         <option>الشاطئ</option>
-        <option>النهضة</option>
-        <option>الجامعة</option>
+        <option>التحلية</option>
+        <option>الروضة</option>
+        <option>الكوثر</option>
+        <option>المنار</option>
+        <option>أبرق الرغامة</option>
+        <option>الحمدانية</option>
+        <option>العزيزية</option>
+        <option>الثغر</option>
+        <option>طيبة</option>
+        <option>الريان</option>
+        <option>الصالحية</option>
+        <option>الواحة</option>
+        <option>الرحيلي</option>
+        <option>الصفوة</option>
+        <option>الخالدية</option>
+        <option>الشرفية</option>
+        <option>الحمراء</option>
+        <option>جوهرة العروس</option>
+        <option>أبحر الشمالية</option>
+        <option>أبحر الجنوبية</option>
+        <option>البساتين</option>
       </select>
     </div>
 
-    <div id="listings"></div>
+    <div class="property">
+      <div class="property-type">شقة</div>
+      <img src="https://via.placeholder.com/600x300" alt="صورة عقار" class="property-image">
+      <p><strong>الوصف:</strong> شقة فاخرة في حي الروضة قريبة من الخدمات وبسعر مميز.</p>
+      <div class="code-container">
+        <span>كود: 12345</span>
+        <button class="copy-btn" onclick="copyCode('12345')">نسخ</button>
+      </div>
+      <button class="share-btn" onclick="shareProperty('شقة فاخرة في حي الروضة قريبة من الخدمات.', 'https://yourwebsite.com/property/12345', 'https://via.placeholder.com/600x300')">مشاركة</button>
+    </div>
   </div>
 
-  <!-- Firebase -->
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
-
   <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyCr4T8GLRxtf_6LNrokjKvmBOwSkuGO5yQ",
-      authDomain: "hamsa-6009e.firebaseapp.com",
-      databaseURL: "https://hamsa-6009e-default-rtdb.firebaseio.com/",
-      projectId: "hamsa-6009e",
-      storageBucket: "hamsa-6009e.appspot.com",
-      messagingSenderId: "998163671039",
-      appId: "1:998163671039:web:d1930ea5b71a3a3fc729ca"
-    };
-
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
-
-    let currentUser = localStorage.getItem("currentUser") || "";
-    let properties = [];
-
-    function login() {
-      const phone = document.getElementById("phone").value.trim();
-      if (!phone) return;
-      document.getElementById("loginBox").style.display = "none";
-      db.ref("users").once("value", snapshot => {
-        const users = snapshot.val() || {};
-        if (phone === "0534553706") {
-          document.getElementById("adminPanel").style.display = "block";
-        }
-        if (users[phone] || phone === "0534553706") {
-          currentUser = phone;
-          localStorage.setItem("currentUser", phone);
-          document.getElementById("filters").style.display = "flex";
-          displayProperties();
-        } else {
-          document.getElementById("loginNote").innerText = "ليس لديك حساب. رجاء التسجيل لتتمكن من الدخول";
-          document.getElementById("registerBox").style.display = "block";
-          document.getElementById("loginBox").style.display = "block";
-        }
+    function copyCode(code) {
+      navigator.clipboard.writeText(code).then(() => {
+        alert("تم نسخ الكود: " + code);
       });
     }
 
-    function register() {
-      const phone = document.getElementById("newUserPhone").value.trim();
-      if (!phone) return;
-      db.ref("users/" + phone).set({ registered: true }, () => {
-        alert("تم التسجيل بنجاح");
-        location.reload();
-      });
-    }
-
-    function addProperty() {
-      const type = document.getElementById("type").value;
-      const district = document.getElementById("district").value;
-      const price = document.getElementById("price").value;
-      const desc = document.getElementById("desc").value;
-      const image = document.getElementById("image").value;
-      const code = document.getElementById("code").value;
-      const newPost = {
-        type, district, price, desc, image, code,
-        timestamp: Date.now()
-      };
-      db.ref("properties").push(newPost).then(() => {
-        alert("تمت الإضافة بنجاح");
-        displayProperties();
-      });
-    }
-
-    function displayProperties() {
-      db.ref("properties").once("value", snapshot => {
-        properties = [];
-        snapshot.forEach(child => {
-          properties.push(child.val());
-        });
-        renderProperties();
-      });
-    }
-
-    function renderProperties() {
-      const sort = document.getElementById("sortFilter").value;
-      const district = document.getElementById("districtFilter").value;
-      let filtered = [...properties];
-
-      if (district) {
-        filtered = filtered.filter(p => p.district === district);
-      }
-
-      if (sort === "new") filtered.sort((a, b) => b.timestamp - a.timestamp);
-      if (sort === "old") filtered.sort((a, b) => a.timestamp - b.timestamp);
-      if (sort === "high") filtered.sort((a, b) => b.price - a.price);
-      if (sort === "low") filtered.sort((a, b) => a.price - b.price);
-
-      const listings = document.getElementById("listings");
-      listings.innerHTML = "";
-      filtered.forEach(prop => {
-        const div = document.createElement("div");
-        div.className = "property";
-        div.innerHTML = `
-          <img src="${prop.image}" alt="صورة العقار">
-          <h4>${prop.type}</h4>
-          <p><strong>الحي:</strong> ${prop.district}</p>
-          <p><strong>السعر:</strong> ${prop.price}</p>
-          <p><strong>الوصف:</strong> ${prop.desc}</p>
-          <p><strong>الكود:</strong> ${prop.code} 
-            <button class="share-btn" onclick="share('${prop.code}', '${prop.desc}')">مشاركة</button>
-          </p>
-        `;
-        listings.appendChild(div);
-      });
-    }
-
-    function share(code, desc) {
-      const text = `إعلان رقم ${code}: ${desc}\nرابط الصفحة: ${window.location.href}`;
-      navigator.share ? navigator.share({ text }) : alert("انسخ الرابط: " + text);
-    }
-
-    function logout() {
-      if (confirm("هل تريد تسجيل الخروج؟")) {
-        localStorage.removeItem("currentUser");
-        location.reload();
-      }
-    }
-
-    function filterProperties() {
-      renderProperties();
-    }
-
-    window.onload = () => {
-      if (currentUser) {
-        document.getElementById("loginBox").style.display = "none";
-        if (currentUser === "0534553706") {
-          document.getElementById("adminPanel").style.display = "block";
-        }
-        document.getElementById("filters").style.display = "flex";
-        displayProperties();
+    function shareProperty(description, url, imageUrl) {
+      if (navigator.share) {
+        navigator.share({
+          title: "عقار جدة",
+          text: description,
+          url: url
+        }).catch(console.error);
+      } else {
+        alert("المشاركة غير مدعومة في هذا المتصفح");
       }
     }
   </script>
-
 </body>
 </html>
