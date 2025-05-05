@@ -9,7 +9,6 @@
   <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js"></script>
   <style>
-    /* Example styling */
     body {
       font-family: Arial, sans-serif;
     }
@@ -27,7 +26,6 @@
 </head>
 <body>
 
-  <!-- Login Section -->
   <div id="loginBox">
     <h2>تسجيل الدخول</h2>
     <input type="text" id="phone" placeholder="أدخل رقم الهاتف">
@@ -36,14 +34,12 @@
     <button id="showRegBtn" onclick="showRegisterBox()" style="display:none;">التسجيل</button>
   </div>
 
-  <!-- Register Section -->
   <div id="registerBox">
     <h2>التسجيل</h2>
     <input type="text" id="newPhone" placeholder="أدخل رقم الهاتف الجديد">
     <button onclick="registerUser()">تسجيل</button>
   </div>
 
-  <!-- Listings Section -->
   <div id="listings">
     <h2>الخصائص المتاحة</h2>
     <div id="filterBar">
@@ -54,7 +50,6 @@
   </div>
 
   <script>
-    // إعداد Firebase
     const firebaseConfig = {
       apiKey: "your-api-key",
       authDomain: "your-auth-domain",
@@ -64,45 +59,39 @@
       messagingSenderId: "your-sender-id",
       appId: "your-app-id"
     };
+
     const app = firebase.initializeApp(firebaseConfig);
     const db = firebase.database(app);
-    
+
     let currentUser = null;
 
-    // التشفير
     function encryptPhone(phone) {
       return CryptoJS.AES.encrypt(phone, 'secret-key').toString();
     }
 
-    // فك التشفير
     function decryptPhone(encryptedPhone) {
       const bytes = CryptoJS.AES.decrypt(encryptedPhone, 'secret-key');
       return bytes.toString(CryptoJS.enc.Utf8);
     }
 
-    // وظيفة تسجيل الدخول
     function login() {
       const phone = document.getElementById("phone").value.trim();
       if (!phone) return;
 
-      // تشفير الرقم المدخل
       const encryptedPhone = encryptPhone(phone);
 
-      // البحث في قاعدة البيانات
       db.ref("users").orderByValue().equalTo(encryptedPhone).once("value", snap => {
-        if (snap.exists() || phone === "0534553706") { // فحص الرقم المسموح به (مثل الإدخال المخصص)
-          currentUser = phone; // تعيين الرقم الحالي
-          localStorage.setItem("phone", encryptedPhone); // حفظ الرقم المشفر
-          afterLogin(); // التوجيه بعد الدخول الناجح
+        if (snap.exists() || phone === "0534553706") {
+          currentUser = phone;
+          localStorage.setItem("phone", encryptedPhone);
+          afterLogin();
         } else {
-          // عرض رسالة التنبيه إذا لم يتم العثور على الرقم
           document.getElementById("loginNote").style.display = "block";
           document.getElementById("showRegBtn").style.display = "inline-block";
         }
       });
     }
 
-    // بعد الدخول
     function afterLogin() {
       document.getElementById("loginBox").style.display = "none";
       document.getElementById("registerBox").style.display = "none";
@@ -116,35 +105,31 @@
       displayProperties();
     }
 
-    // استرجاع البيانات عند تحميل الصفحة
     window.onload = () => {
       const savedUser = localStorage.getItem("phone");
       if (savedUser) {
-        currentUser = decryptPhone(savedUser); // فك تشفير الرقم المخزن
+        currentUser = decryptPhone(savedUser);
         document.getElementById("phone").value = currentUser;
         afterLogin();
       }
     };
 
-    // تسجيل مستخدم جديد
     function registerUser() {
       const newPhone = document.getElementById("newPhone").value.trim();
       if (!newPhone) return;
 
-      const encryptedPhone = encryptPhone(newPhone); // تشفير الرقم قبل التخزين
-      db.ref("users").push(encryptedPhone); // تخزين الرقم المشفر
+      const encryptedPhone = encryptPhone(newPhone);
+      db.ref("users").push(encryptedPhone);
       alert("تم التسجيل بنجاح");
       document.getElementById("registerBox").style.display = "none";
       document.getElementById("loginBox").style.display = "block";
     }
 
-    // عرض صفحة التسجيل
     function showRegisterBox() {
       document.getElementById("loginBox").style.display = "none";
       document.getElementById("registerBox").style.display = "block";
     }
 
-    // تسجيل الخروج
     function logout() {
       localStorage.removeItem("phone");
       currentUser = null;
@@ -155,9 +140,7 @@
       document.getElementById("adminPanel").style.display = "none";
     }
 
-    // عرض الخصائص
     function displayProperties() {
-      // تنفيذ عرض الخصائص أو أي محتوى متعلق هنا
       console.log("عرض الخصائص للمستخدم: " + currentUser);
     }
   </script>
