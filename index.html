@@ -26,9 +26,10 @@
       background: white;
       color: #7b4f2c;
       border: none;
-      padding: 0.5rem 1rem;
+      padding: 0.3rem 0.8rem;
       cursor: pointer;
       border-radius: 4px;
+      font-size: 0.9rem;
     }
     .container {
       max-width: 800px;
@@ -72,7 +73,7 @@
     }
     .property img {
       width: 100%;
-      max-height: 200px;
+      height: auto;
       object-fit: cover;
       background: #f2e9e4;
       border-radius: 6px;
@@ -96,6 +97,14 @@
     .filter-bar select {
       flex: 1;
     }
+    .property-filter {
+      margin-left: 1rem;
+    }
+    #userPhone {
+      margin-top: 1rem;
+      font-size: 0.9rem;
+      color: #7b4f2c;
+    }
   </style>
 </head>
 <body>
@@ -103,6 +112,7 @@
   <header>
     <h1>عقارات جدة</h1>
     <button class="logout-btn" onclick="logout()">تسجيل الخروج</button>
+    <p id="userPhone"></p>
   </header>
 
   <div class="container">
@@ -171,6 +181,12 @@
         <option>النهضة</option>
         <option>الجامعة</option>
       </select>
+      <select onchange="filterProperties()" id="typeFilter" class="property-filter">
+        <option value="">كل الأنواع</option>
+        <option>شقة</option>
+        <option>فيلا</option>
+        <option>أرض</option>
+      </select>
     </div>
 
     <div id="listings"></div>
@@ -210,6 +226,7 @@
           currentUser = phone;
           localStorage.setItem("currentUser", phone);
           document.getElementById("filters").style.display = "flex";
+          document.getElementById("userPhone").innerText = "رقم الجوال: " + phone;
           displayProperties();
         } else {
           document.getElementById("loginNote").innerText = "ليس لديك حساب. رجاء التسجيل لتتمكن من الدخول";
@@ -257,64 +274,4 @@
 
     function renderProperties() {
       const sort = document.getElementById("sortFilter").value;
-      const district = document.getElementById("districtFilter").value;
-      let filtered = [...properties];
-
-      if (district) {
-        filtered = filtered.filter(p => p.district === district);
-      }
-
-      if (sort === "new") filtered.sort((a, b) => b.timestamp - a.timestamp);
-      if (sort === "old") filtered.sort((a, b) => a.timestamp - b.timestamp);
-      if (sort === "high") filtered.sort((a, b) => b.price - a.price);
-      if (sort === "low") filtered.sort((a, b) => a.price - b.price);
-
-      const listings = document.getElementById("listings");
-      listings.innerHTML = "";
-      filtered.forEach(prop => {
-        const div = document.createElement("div");
-        div.className = "property";
-        div.innerHTML = `
-          <img src="${prop.image}" alt="صورة العقار">
-          <h4>${prop.type}</h4>
-          <p><strong>الحي:</strong> ${prop.district}</p>
-          <p><strong>السعر:</strong> ${prop.price}</p>
-          <p><strong>الوصف:</strong> ${prop.desc}</p>
-          <p><strong>الكود:</strong> ${prop.code} 
-            <button class="share-btn" onclick="share('${prop.code}', '${prop.desc}')">مشاركة</button>
-          </p>
-        `;
-        listings.appendChild(div);
-      });
-    }
-
-    function share(code, desc) {
-      const text = `إعلان رقم ${code}: ${desc}\nرابط الصفحة: ${window.location.href}`;
-      navigator.share ? navigator.share({ text }) : alert("انسخ الرابط: " + text);
-    }
-
-    function logout() {
-      if (confirm("هل تريد تسجيل الخروج؟")) {
-        localStorage.removeItem("currentUser");
-        location.reload();
-      }
-    }
-
-    function filterProperties() {
-      renderProperties();
-    }
-
-    window.onload = () => {
-      if (currentUser) {
-        document.getElementById("loginBox").style.display = "none";
-        if (currentUser === "0534553706") {
-          document.getElementById("adminPanel").style.display = "block";
-        }
-        document.getElementById("filters").style.display = "flex";
-        displayProperties();
-      }
-    }
-  </script>
-
-</body>
-</html>
+      const district =
