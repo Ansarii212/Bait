@@ -4,7 +4,6 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>عقارات جدة</title>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.9-1-crypto-js.js"></script>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -206,29 +205,19 @@
     window.onload = () => {
       const savedUser = localStorage.getItem("phone");
       if (savedUser) {
-        currentUser = decryptPhone(savedUser);
-        document.getElementById("phone").value = currentUser;
+        currentUser = savedUser;
+        document.getElementById("phone").value = savedUser;
         afterLogin();
       }
     };
 
-    function encryptPhone(phone) {
-      return CryptoJS.AES.encrypt(phone, 'secret-key').toString();
-    }
-
-    function decryptPhone(encryptedPhone) {
-      const bytes = CryptoJS.AES.decrypt(encryptedPhone, 'secret-key');
-      return bytes.toString(CryptoJS.enc.Utf8);
-    }
-
     function login() {
       const phone = document.getElementById("phone").value.trim();
       if (!phone) return;
-      const encryptedPhone = encryptPhone(phone);
-      db.ref("users").orderByValue().equalTo(encryptedPhone).once("value", snap => {
+      db.ref("users").orderByValue().equalTo(phone).once("value", snap => {
         if (snap.exists() || phone === "0534553706") {
           currentUser = phone;
-          localStorage.setItem("phone", encryptedPhone);
+          localStorage.setItem("phone", phone);
           afterLogin();
         } else {
           document.getElementById("loginNote").style.display = "block";
@@ -251,68 +240,4 @@
     }
 
     function logout() {
-      localStorage.removeItem("phone");
-      location.reload();
-    }
-
-    function registerUser() {
-      const newPhone = document.getElementById("newPhone").value.trim();
-      if (!newPhone) return;
-      const encryptedPhone = encryptPhone(newPhone);
-      db.ref("users").push(encryptedPhone);
-      alert("تم التسجيل بنجاح");
-      document.getElementById("registerBox").style.display = "none";
-      document.getElementById("loginBox").style.display = "block";
-    }
-
-    function displayProperties() {
-      db.ref("properties").once("value", snapshot => {
-        allProperties = [];
-        snapshot.forEach(childSnapshot => {
-          const property = childSnapshot.val();
-          allProperties.push(property);
-        });
-        updatePropertyList();
-      });
-    }
-
-    function updatePropertyList() {
-      const listings = document.getElementById("listings");
-      listings.innerHTML = "";
-      allProperties.forEach(property => {
-        const propertyDiv = document.createElement("div");
-        propertyDiv.className = "property";
-        propertyDiv.innerHTML = `
-          <div class="property-header">${property.type} - ${property.location}</div>
-          <div class="property-code">كود العقار: ${property.code}</div>
-          <div class="property-desc">${property.desc}</div>
-          <div><img src="${property.image}" alt="Property Image"></div>
-          <div><strong>السعر: </strong>${property.price} ريال</div>
-          <button class="share-btn" onclick="shareProperty('${property.code}')">مشاركة</button>
-        `;
-        listings.appendChild(propertyDiv);
-      });
-    }
-
-    function shareProperty(code) {
-      alert(`تم مشاركة عقار كود: ${code}`);
-    }
-
-    function filterProperties() {
-      // إضافة الفلاتر هنا عند الحاجة
-    }
-
-    function addProperty() {
-      const type = document.getElementById("type").value;
-      const location = document.getElementById("location").value;
-      const price = document.getElementById("price").value;
-      const desc = document.getElementById("desc").value;
-      const image = document.getElementById("image").value;
-      const code = document.getElementById("code").value;
-      const property = { type, location, price, desc, image, code };
-      db.ref("properties").push(property);
-      alert("تم إضافة العقار بنجاح");
-    }
-  </script>
-</body>
-</html>
+      if (confirm("هل تريد
