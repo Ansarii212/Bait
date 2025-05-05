@@ -6,8 +6,8 @@
   <title>عقارات جدة</title>
   <style>
     body {
-      font-family: 'Arial', sans-serif;
-      background: #f0f0f0;
+      font-family: Arial, sans-serif;
+      background: #fdfaf5;
       margin: 0;
       padding: 0;
       direction: rtl;
@@ -21,15 +21,14 @@
     }
     #logoutBtn {
       position: absolute;
-      left: 10px;
-      top: 10px;
-      background: #fff;
+      left: 1rem;
+      top: 1rem;
+      background: white;
       color: #7b4f2c;
       border: 1px solid #7b4f2c;
-      border-radius: 6px;
-      padding: 0.3rem 0.8rem;
+      border-radius: 20px;
+      padding: 5px 10px;
       cursor: pointer;
-      display: none;
     }
     .container {
       max-width: 800px;
@@ -39,89 +38,124 @@
     .box {
       background: white;
       padding: 2rem;
-      border-radius: 8px;
-      margin-top: 1rem;
+      margin-top: 2rem;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.05);
     }
-    input, textarea {
+    input, select, textarea {
       width: 100%;
       padding: 0.7rem;
       margin-bottom: 1rem;
       border: 1px solid #ccc;
-      border-radius: 6px;
+      border-radius: 20px;
+      text-align: right;
     }
     button {
       padding: 0.7rem 1.5rem;
       background: #7b4f2c;
       color: white;
       border: none;
-      border-radius: 6px;
+      border-radius: 20px;
       cursor: pointer;
     }
     .property {
-      background: white;
+      background: #fff8f2;
       padding: 1rem;
       margin-bottom: 1rem;
-      border-left: 5px solid #7b4f2c;
-      border-radius: 6px;
+      border-radius: 10px;
+      border: 1px solid #e0d4c2;
     }
     .property img {
       width: 100%;
-      height: auto;
-      max-height: 300px;
+      max-height: 250px;
       object-fit: contain;
-      border-radius: 6px;
+      border-radius: 10px;
+      background: #f5ebe1;
+      margin-bottom: 0.5rem;
+    }
+    .share-btn {
+      background: #ddd;
+      color: #333;
+      border-radius: 20px;
+      padding: 5px 10px;
+      margin-top: 5px;
+      float: left;
+      cursor: pointer;
+    }
+    .filter-bar {
       margin-bottom: 1rem;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
     }
-    #adminPanel, #listings, #registerBox {
-      display: none;
+    .filter-bar select {
+      flex: 1;
+      padding: 0.5rem;
+      border-radius: 20px;
     }
-    .alert {
+    .highlight {
       color: red;
-      margin-bottom: 1rem;
-      text-align: center;
+      margin-top: 1rem;
     }
   </style>
 </head>
 <body>
   <header>
-    <h1>عقارات جدة</h1>
-    <button id="logoutBtn" onclick="confirmLogout()">تسجيل الخروج</button>
-    <div id="userPhone" style="margin-top: 5px;"></div>
+    <h2>عقارات جدة</h2>
+    <div id="userPhoneDisplay"></div>
+    <button id="logoutBtn" style="display:none" onclick="logout()">تسجيل خروج</button>
   </header>
 
   <div class="container">
 
     <div class="box" id="loginBox">
-      <h2>تسجيل الدخول</h2>
-      <input type="text" id="phone" placeholder="أدخل رقم الجوال">
-      <button onclick="login()" id="loginBtn">دخول</button>
-      <div class="alert" id="loginAlert" style="display:none;">ليس لديك حساب. الرجاء التسجيل</div>
-      <button onclick="showRegister()" id="showRegisterBtn" style="display:none;">تسجيل جديد</button>
+      <h3>تسجيل الدخول برقم الجوال</h3>
+      <input type="text" id="phone" placeholder="أدخل رقم جوالك">
+      <div class="highlight" id="loginNote" style="display:none">ليس لديك حساب، الرجاء التسجيل</div>
+      <button onclick="login()">دخول</button>
+      <button onclick="showRegister()" id="showRegBtn" style="display:none">تسجيل جديد</button>
     </div>
 
-    <div class="box" id="registerBox">
-      <h2>تسجيل مستخدم جديد</h2>
-      <input type="text" id="regPhone" placeholder="أدخل رقم الجوال">
-      <button onclick="register()">حفظ</button>
+    <div class="box" id="registerBox" style="display:none; background:#fff0e0">
+      <h3>تسجيل مستخدم جديد</h3>
+      <input type="text" id="newPhone" placeholder="أدخل رقم جوالك للتسجيل">
+      <button onclick="registerUser()">حفظ</button>
     </div>
 
-    <div id="adminPanel" class="box">
+    <div class="box" id="adminPanel" style="display:none">
       <h3>إضافة عقار جديد</h3>
-      <input type="text" id="type" placeholder="نوع العقار (شقة، أرض، ...)">
+      <select id="type">
+        <option value="">اختر نوع العقار</option>
+        <option value="شقة">شقة</option>
+        <option value="فيلا">فيلا</option>
+        <option value="أرض">أرض</option>
+      </select>
       <input type="text" id="location" placeholder="الموقع">
       <input type="text" id="price" placeholder="السعر">
-      <textarea id="desc" placeholder="وصف العقار"></textarea>
+      <textarea id="desc" placeholder="الوصف"></textarea>
       <input type="text" id="image" placeholder="رابط الصورة">
+      <input type="text" id="code" placeholder="كود الإعلان">
       <button onclick="addProperty()">إضافة</button>
     </div>
 
+    <div class="filter-bar" id="filterBar" style="display:none">
+      <select onchange="filterProperties()" id="sortSelect">
+        <option value="latest">الأحدث</option>
+        <option value="oldest">الأقدم</option>
+        <option value="high">الأغلى</option>
+        <option value="low">الأرخص</option>
+      </select>
+      <select onchange="filterProperties()" id="locationFilter">
+        <option value="">كل المواقع</option>
+      </select>
+    </div>
+
     <div id="listings"></div>
+
   </div>
 
-  <!-- Firebase -->
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
-
   <script>
     const firebaseConfig = {
       apiKey: "AIzaSyCr4T8GLRxtf_6LNrokjKvmBOwSkuGO5yQ",
@@ -132,60 +166,50 @@
       messagingSenderId: "998163671039",
       appId: "1:998163671039:web:d1930ea5b71a3a3fc729ca"
     };
-
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    const loginBox = document.getElementById("loginBox");
-    const registerBox = document.getElementById("registerBox");
-    const adminPanel = document.getElementById("adminPanel");
-    const listings = document.getElementById("listings");
-    const logoutBtn = document.getElementById("logoutBtn");
-    const loginAlert = document.getElementById("loginAlert");
-    const showRegisterBtn = document.getElementById("showRegisterBtn");
-    const userPhoneDiv = document.getElementById("userPhone");
-    const loginBtn = document.getElementById("loginBtn");
+    let currentUser = null;
+    let allProperties = [];
 
-    window.onload = function() {
-      const storedPhone = localStorage.getItem("phone");
-      if (storedPhone) {
-        loginWithPhone(storedPhone);
+    window.onload = () => {
+      const savedUser = localStorage.getItem("phone");
+      if (savedUser) {
+        currentUser = savedUser;
+        document.getElementById("phone").value = savedUser;
+        afterLogin();
       }
     };
 
-    function clearInputs() {
-      document.querySelectorAll("input, textarea").forEach(i => i.value = "");
-    }
-
     function login() {
       const phone = document.getElementById("phone").value.trim();
-      clearInputs();
-      db.ref("users").once("value", snap => {
-        const users = snap.val() || {};
-        if (phone === "0534553706" || users[phone]) {
+      if (!phone) return;
+      db.ref("users").orderByValue().equalTo(phone).once("value", snap => {
+        if (snap.exists() || phone === "0534553706") {
+          currentUser = phone;
           localStorage.setItem("phone", phone);
-          loginWithPhone(phone);
+          afterLogin();
         } else {
-          loginAlert.style.display = "block";
-          showRegisterBtn.style.display = "inline-block";
-          loginBtn.style.display = "none";
+          document.getElementById("loginNote").style.display = "block";
+          document.getElementById("showRegBtn").style.display = "inline-block";
         }
       });
     }
 
-    function loginWithPhone(phone) {
-      loginBox.style.display = "none";
-      registerBox.style.display = "none";
-      logoutBtn.style.display = "inline-block";
-      userPhoneDiv.innerText = "رقم المستخدم: " + phone;
-      if (phone === "0534553706") {
-        adminPanel.style.display = "block";
+    function afterLogin() {
+      document.getElementById("loginBox").style.display = "none";
+      document.getElementById("registerBox").style.display = "none";
+      document.getElementById("listings").style.display = "block";
+      document.getElementById("filterBar").style.display = "flex";
+      document.getElementById("logoutBtn").style.display = "block";
+      document.getElementById("userPhoneDisplay").innerText = currentUser;
+      if (currentUser === "0534553706") {
+        document.getElementById("adminPanel").style.display = "block";
       }
-      listings.style.display = "block";
       displayProperties();
     }
 
-    function confirmLogout() {
+    function logout() {
       if (confirm("هل تريد تسجيل الخروج؟")) {
         localStorage.removeItem("phone");
         location.reload();
@@ -193,55 +217,95 @@
     }
 
     function showRegister() {
-      loginBox.style.display = "none";
-      registerBox.style.display = "block";
-      listings.style.display = "none";
+      document.getElementById("loginBox").style.display = "none";
+      document.getElementById("registerBox").style.display = "block";
     }
 
-    function register() {
-      const regPhone = document.getElementById("regPhone").value.trim();
-      if (!regPhone) return;
-      db.ref("users/" + regPhone).set(true, () => {
+    function registerUser() {
+      const newPhone = document.getElementById("newPhone").value.trim();
+      if (!newPhone) return;
+      db.ref("users").push(newPhone).then(() => {
         alert("تم التسجيل بنجاح");
-        registerBox.style.display = "none";
-        loginBox.style.display = "block";
-        document.getElementById("phone").value = regPhone;
-        clearInputs();
+        location.reload();
       });
     }
 
     function addProperty() {
-      const newProp = {
-        type: document.getElementById("type").value,
-        location: document.getElementById("location").value,
-        price: document.getElementById("price").value,
-        desc: document.getElementById("desc").value,
-        image: document.getElementById("image").value
-      };
-      db.ref("properties").push(newProp, () => {
-        alert("تمت الإضافة");
-        clearInputs();
+      const type = document.getElementById("type").value;
+      const location = document.getElementById("location").value;
+      const price = document.getElementById("price").value;
+      const desc = document.getElementById("desc").value;
+      const image = document.getElementById("image").value;
+      const code = document.getElementById("code").value;
+      if (!type || !location || !price || !desc || !image) return;
+      const newAd = { type, location, price, desc, image, code, timestamp: Date.now() };
+      db.ref("properties").push(newAd).then(() => {
         displayProperties();
+        document.querySelectorAll("#adminPanel input, #adminPanel textarea, #adminPanel select").forEach(e => e.value = "");
       });
     }
 
     function displayProperties() {
-      listings.innerHTML = "<h3 style='margin-top:2rem;'>العقارات المتاحة</h3>";
       db.ref("properties").once("value", snap => {
+        const container = document.getElementById("listings");
+        container.innerHTML = "";
+        allProperties = [];
+        let locationSet = new Set();
         snap.forEach(child => {
-          const p = child.val();
-          const div = document.createElement("div");
-          div.className = "property";
-          div.innerHTML = `
-            <img src="${p.image}" alt="صورة العقار">
-            <h4>${p.type}</h4>
-            <p><strong>الموقع:</strong> ${p.location}</p>
-            <p><strong>السعر:</strong> ${p.price}</p>
-            <p>${p.desc}</p>
-          `;
-          listings.appendChild(div);
+          const prop = child.val();
+          allProperties.push(prop);
+          locationSet.add(prop.location);
         });
+        updateLocationFilter([...locationSet]);
+        filterProperties();
       });
+    }
+
+    function updateLocationFilter(locations) {
+      const select = document.getElementById("locationFilter");
+      select.innerHTML = `<option value="">كل المواقع</option>`;
+      locations.forEach(loc => {
+        const opt = document.createElement("option");
+        opt.value = loc;
+        opt.textContent = loc;
+        select.appendChild(opt);
+      });
+    }
+
+    function filterProperties() {
+      const sort = document.getElementById("sortSelect").value;
+      const loc = document.getElementById("locationFilter").value;
+      let filtered = [...allProperties];
+      if (loc) filtered = filtered.filter(p => p.location === loc);
+      if (sort === "latest") filtered.sort((a, b) => b.timestamp - a.timestamp);
+      else if (sort === "oldest") filtered.sort((a, b) => a.timestamp - b.timestamp);
+      else if (sort === "high") filtered.sort((a, b) => parseFloat(b.price) - parseFloat(a.price));
+      else if (sort === "low") filtered.sort((a, b) => parseFloat(a.price) - parseFloat(b.price));
+
+      const container = document.getElementById("listings");
+      container.innerHTML = "";
+      filtered.forEach(p => {
+        const div = document.createElement("div");
+        div.className = "property";
+        div.innerHTML = `
+          <img src="${p.image}" alt="صورة العقار">
+          <h4>${p.type} - ${p.code || "بدون كود"}</h4>
+          <p><strong>الموقع:</strong> ${p.location}</p>
+          <p><strong>السعر:</strong> ${p.price}</p>
+          <p><strong>الوصف:</strong> ${p.desc}</p>
+          <div class="share-btn" onclick="share('${p.type}', '${p.location}', '${p.price}')">مشاركة</div>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    function share(type, location, price) {
+      const text = `عقار ${type} في ${location} بسعر ${price}`;
+      if (navigator.share) {
+        navigator.share({ title: "عقار مميز", text });
+      } else {
+        alert("انسخ النص وشاركه: " + text);
+      }
     }
   </script>
 </body>
