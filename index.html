@@ -1,231 +1,108 @@
 <!DOCTYPE html>
 <html lang="ar">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>عقارات جدة</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login and Registration</title>
+  <script src="https://cdn.jsdelivr.net/npm/crypto-js@4.1.1/core.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/crypto-js@4.1.1/aes.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js"></script>
   <style>
+    /* Example styling */
     body {
       font-family: Arial, sans-serif;
-      background: #fdfaf5;
-      margin: 0;
-      padding: 0;
-      direction: rtl;
     }
-    header {
-      background: #7b4f2c;
-      color: white;
-      padding: 1rem;
-      text-align: center;
-      position: relative;
+    #loginBox, #registerBox, #listings {
+      display: none;
     }
-    #logoutBtn {
-      position: absolute;
-      left: 1rem;
-      top: 1rem;
-      background: white;
-      color: #7b4f2c;
-      border: 1px solid #7b4f2c;
-      border-radius: 20px;
-      padding: 5px 10px;
-      cursor: pointer;
-      font-size: 12px;
-    }
-    #userPhoneDisplay {
-      margin-top: 1rem;
-      font-size: 14px;
-      color: #7b4f2c;
-    }
-    .container {
-      max-width: 800px;
-      margin: auto;
-      padding: 1rem;
-    }
-    .box {
-      background: white;
-      padding: 2rem;
-      margin-top: 2rem;
-      border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.05);
-    }
-    input, select, textarea {
-      width: 100%;
-      padding: 0.7rem;
-      margin-bottom: 1rem;
-      border: 1px solid #ccc;
-      border-radius: 20px;
-      text-align: right;
-    }
-    button {
-      padding: 0.7rem 1.5rem;
-      background: #7b4f2c;
-      color: white;
-      border: none;
-      border-radius: 20px;
-      cursor: pointer;
-    }
-    .property {
-      background: #fff8f2;
-      padding: 1rem;
-      margin-bottom: 1rem;
-      border-radius: 10px;
-      border: 1px solid #e0d4c2;
-    }
-    .property img {
-      width: 100%;
-      height: auto;
-      max-height: 250px;
-      object-fit: contain;
-      border-radius: 10px;
-      background: #f5ebe1;
-      margin-bottom: 0.5rem;
-    }
-    .share-btn {
-      background: #ddd;
-      color: #333;
-      border-radius: 20px;
-      padding: 5px 10px;
-      margin-top: 5px;
-      float: left;
-      cursor: pointer;
-    }
-    .filter-bar {
-      margin-bottom: 1rem;
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-    .filter-bar select {
-      flex: 1;
-      padding: 0.5rem;
-      border-radius: 20px;
-    }
-    .highlight {
+    #loginNote {
+      display: none;
       color: red;
-      margin-top: 1rem;
     }
-    .property-header {
-      background: #7b4f2c;
-      color: white;
-      padding: 10px;
-      border-radius: 10px;
-      margin-bottom: 10px;
-    }
-    .property-code {
-      background: #f0f0f0;
-      padding: 5px;
-      border-radius: 5px;
-      font-size: 12px;
-      color: #7b4f2c;
-    }
-    .property-desc {
-      background: #f4f4f4;
-      padding: 10px;
-      border-radius: 5px;
+    #adminPanel {
+      display: none;
     }
   </style>
 </head>
 <body>
-  <header>
-    <h2>عقارات جدة</h2>
-    <div id="userPhoneDisplay"></div>
-    <button id="logoutBtn" style="display:none" onclick="logout()">تسجيل خروج</button>
-  </header>
 
-  <div class="container">
-    <div class="box" id="loginBox">
-      <h3>تسجيل الدخول برقم الجوال</h3>
-      <input type="text" id="phone" placeholder="أدخل رقم جوالك">
-      <div class="highlight" id="loginNote" style="display:none">ليس لديك حساب، الرجاء التسجيل</div>
-      <button onclick="login()">دخول</button>
-      <button onclick="showRegister()" id="showRegBtn" style="display:none">تسجيل جديد</button>
-    </div>
-
-    <div class="box" id="registerBox" style="display:none; background:#fff0e0">
-      <h3>تسجيل مستخدم جديد</h3>
-      <input type="text" id="newPhone" placeholder="أدخل رقم جوالك للتسجيل">
-      <button onclick="registerUser()">حفظ</button>
-    </div>
-
-    <div class="box" id="adminPanel" style="display:none">
-      <h3>إضافة عقار جديد</h3>
-      <select id="type">
-        <option value="">اختر نوع العقار</option>
-        <option value="شقة">شقة</option>
-        <option value="فيلا">فيلا</option>
-        <option value="أرض">أرض</option>
-      </select>
-      <input type="text" id="location" placeholder="الموقع">
-      <input type="text" id="price" placeholder="السعر">
-      <textarea id="desc" placeholder="الوصف"></textarea>
-      <input type="text" id="image" placeholder="رابط الصورة">
-      <input type="text" id="code" placeholder="كود الإعلان">
-      <button onclick="addProperty()">إضافة</button>
-    </div>
-
-    <div class="filter-bar" id="filterBar" style="display:none">
-      <select onchange="filterProperties()" id="sortSelect">
-        <option value="latest">الأحدث</option>
-        <option value="oldest">الأقدم</option>
-        <option value="high">الأغلى</option>
-        <option value="low">الأرخص</option>
-      </select>
-      <select onchange="filterProperties()" id="locationFilter">
-        <option value="">كل المواقع</option>
-      </select>
-      <select onchange="filterProperties()" id="typeFilter">
-        <option value="">كل الأنواع</option>
-        <option value="شقة">شقة</option>
-        <option value="فيلا">فيلا</option>
-        <option value="أرض">أرض</option>
-      </select>
-    </div>
-
-    <div id="listings"></div>
+  <!-- Login Section -->
+  <div id="loginBox">
+    <h2>تسجيل الدخول</h2>
+    <input type="text" id="phone" placeholder="أدخل رقم الهاتف">
+    <button onclick="login()">دخول</button>
+    <div id="loginNote">الرقم غير موجود. الرجاء التسجيل أولاً.</div>
+    <button id="showRegBtn" onclick="showRegisterBox()" style="display:none;">التسجيل</button>
   </div>
 
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+  <!-- Register Section -->
+  <div id="registerBox">
+    <h2>التسجيل</h2>
+    <input type="text" id="newPhone" placeholder="أدخل رقم الهاتف الجديد">
+    <button onclick="registerUser()">تسجيل</button>
+  </div>
+
+  <!-- Listings Section -->
+  <div id="listings">
+    <h2>الخصائص المتاحة</h2>
+    <div id="filterBar">
+      <button id="logoutBtn" onclick="logout()">تسجيل الخروج</button>
+    </div>
+    <div id="userPhoneDisplay"></div>
+    <div id="adminPanel">لوحة الإدارة</div>
+  </div>
+
   <script>
+    // إعداد Firebase
     const firebaseConfig = {
-      apiKey: "AIzaSyCr4T8GLRxtf_6LNrokjKvmBOwSkuGO5yQ",
-      authDomain: "hamsa-6009e.firebaseapp.com",
-      databaseURL: "https://hamsa-6009e-default-rtdb.firebaseio.com/",
-      projectId: "hamsa-6009e",
-      storageBucket: "hamsa-6009e.appspot.com",
-      messagingSenderId: "998163671039",
-      appId: "1:998163671039:web:d1930ea5b71a3a3fc729ca"
+      apiKey: "your-api-key",
+      authDomain: "your-auth-domain",
+      databaseURL: "your-database-url",
+      projectId: "your-project-id",
+      storageBucket: "your-storage-bucket",
+      messagingSenderId: "your-sender-id",
+      appId: "your-app-id"
     };
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
-
+    const app = firebase.initializeApp(firebaseConfig);
+    const db = firebase.database(app);
+    
     let currentUser = null;
-    let allProperties = [];
 
-    window.onload = () => {
-      const savedUser = localStorage.getItem("phone");
-      if (savedUser) {
-        currentUser = savedUser;
-        document.getElementById("phone").value = savedUser;
-        afterLogin();
-      }
-    };
+    // التشفير
+    function encryptPhone(phone) {
+      return CryptoJS.AES.encrypt(phone, 'secret-key').toString();
+    }
 
+    // فك التشفير
+    function decryptPhone(encryptedPhone) {
+      const bytes = CryptoJS.AES.decrypt(encryptedPhone, 'secret-key');
+      return bytes.toString(CryptoJS.enc.Utf8);
+    }
+
+    // وظيفة تسجيل الدخول
     function login() {
       const phone = document.getElementById("phone").value.trim();
       if (!phone) return;
-      db.ref("users").orderByValue().equalTo(phone).once("value", snap => {
-        if (snap.exists() || phone === "0534553706") {
-          currentUser = phone;
-          localStorage.setItem("phone", phone);
-          afterLogin();
+
+      // تشفير الرقم المدخل
+      const encryptedPhone = encryptPhone(phone);
+
+      // البحث في قاعدة البيانات
+      db.ref("users").orderByValue().equalTo(encryptedPhone).once("value", snap => {
+        if (snap.exists() || phone === "0534553706") { // فحص الرقم المسموح به (مثل الإدخال المخصص)
+          currentUser = phone; // تعيين الرقم الحالي
+          localStorage.setItem("phone", encryptedPhone); // حفظ الرقم المشفر
+          afterLogin(); // التوجيه بعد الدخول الناجح
         } else {
+          // عرض رسالة التنبيه إذا لم يتم العثور على الرقم
           document.getElementById("loginNote").style.display = "block";
           document.getElementById("showRegBtn").style.display = "inline-block";
         }
       });
     }
 
+    // بعد الدخول
     function afterLogin() {
       document.getElementById("loginBox").style.display = "none";
       document.getElementById("registerBox").style.display = "none";
@@ -239,5 +116,51 @@
       displayProperties();
     }
 
+    // استرجاع البيانات عند تحميل الصفحة
+    window.onload = () => {
+      const savedUser = localStorage.getItem("phone");
+      if (savedUser) {
+        currentUser = decryptPhone(savedUser); // فك تشفير الرقم المخزن
+        document.getElementById("phone").value = currentUser;
+        afterLogin();
+      }
+    };
+
+    // تسجيل مستخدم جديد
+    function registerUser() {
+      const newPhone = document.getElementById("newPhone").value.trim();
+      if (!newPhone) return;
+
+      const encryptedPhone = encryptPhone(newPhone); // تشفير الرقم قبل التخزين
+      db.ref("users").push(encryptedPhone); // تخزين الرقم المشفر
+      alert("تم التسجيل بنجاح");
+      document.getElementById("registerBox").style.display = "none";
+      document.getElementById("loginBox").style.display = "block";
+    }
+
+    // عرض صفحة التسجيل
+    function showRegisterBox() {
+      document.getElementById("loginBox").style.display = "none";
+      document.getElementById("registerBox").style.display = "block";
+    }
+
+    // تسجيل الخروج
     function logout() {
-      if (confirm("هل تريد
+      localStorage.removeItem("phone");
+      currentUser = null;
+      document.getElementById("loginBox").style.display = "block";
+      document.getElementById("listings").style.display = "none";
+      document.getElementById("filterBar").style.display = "none";
+      document.getElementById("logoutBtn").style.display = "none";
+      document.getElementById("adminPanel").style.display = "none";
+    }
+
+    // عرض الخصائص
+    function displayProperties() {
+      // تنفيذ عرض الخصائص أو أي محتوى متعلق هنا
+      console.log("عرض الخصائص للمستخدم: " + currentUser);
+    }
+  </script>
+
+</body>
+</html>
