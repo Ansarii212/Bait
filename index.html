@@ -72,7 +72,7 @@
       color: red;
       margin-top: 1rem;
     }
-    .register-box {
+    .register-box, #listingsTitle, #listings {
       display: none;
     }
   </style>
@@ -106,7 +106,7 @@
       <button onclick="addProperty()">إضافة</button>
     </div>
 
-    <h3 style="margin-top: 2rem;">العقارات المتاحة</h3>
+    <h3 id="listingsTitle" style="margin-top: 2rem;">العقارات المتاحة</h3>
     <div id="listings"></div>
   </div>
 
@@ -128,31 +128,48 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
+    function clearInputs() {
+      document.querySelectorAll('input, textarea').forEach(el => el.value = '');
+    }
+
     function login() {
       const phone = document.getElementById("phone").value.trim();
-      const registeredPhone = localStorage.getItem("registeredPhone");
-
-      if (phone === registeredPhone) {
-        document.getElementById("adminPanel").style.display = "block";
-        document.getElementById("loginBox").style.display = "none";
-        document.getElementById("registerBox").style.display = "none";
-      } else if (phone === "") {
+      if (phone === "") {
         document.getElementById("errorMsg").innerText = "يرجى إدخال رقم الجوال";
-      } else {
-        document.getElementById("errorMsg").innerText = "ليس لديك حساب. رجاء التسجيل لتتمكن من الدخول";
-        document.getElementById("registerBox").style.display = "block";
-        document.getElementById("loginBox").style.display = "none";
+        return;
       }
+
+      db.ref("users").orderByChild("phone").equalTo(phone).once("value", snapshot => {
+        if (snapshot.exists()) {
+          document.getElementById("loginBox").style.display = "none";
+          document.getElementById("errorMsg").innerText = "";
+
+          // عرض لوحة التحكم فقط للرقم المسموح به
+          if (phone === "0534553706") {
+            document.getElementById("adminPanel").style.display = "block";
+          }
+
+          document.getElementById("listingsTitle").style.display = "block";
+          document.getElementById("listings").style.display = "block";
+          displayProperties();
+        } else {
+          document.getElementById("loginBox").style.display = "none";
+          document.getElementById("registerBox").style.display = "block";
+        }
+      });
+
+      clearInputs();
     }
 
     function register() {
       const registerPhone = document.getElementById("registerPhone").value.trim();
       if (registerPhone !== "") {
-        localStorage.setItem("registeredPhone", registerPhone);
-        document.getElementById("registerBox").style.display = "none";
-        document.getElementById("loginBox").style.display = "block";
-        document.getElementById("errorMsg").innerText = "";
+        db.ref("users").push({ phone: registerPhone }).then(() => {
+          document.getElementById("registerBox").style.display = "none";
+          document.getElementById("loginBox").style.display = "block";
+        });
       }
+      clearInputs();
     }
 
     function addProperty() {
@@ -173,6 +190,7 @@
         alert("تمت الإضافة بنجاح");
         displayProperties();
       });
+      clearInputs();
     }
 
     function displayProperties() {
@@ -197,9 +215,6 @@
         });
       });
     }
-
-    // Load data on page load
-    displayProperties();
   </script>
 </body>
 </html>
