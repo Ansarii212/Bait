@@ -228,9 +228,8 @@
     function displayProperties() {
       listings.innerHTML = "<h3 style='margin-top:2rem;'>العقارات المتاحة</h3>";
       db.ref("properties").once("value", snap => {
-        const props = [];
-        snap.forEach(child => props.unshift(child.val()));
-        props.forEach(p => {
+        snap.forEach(child => {
+          const p = child.val();
           const div = document.createElement("div");
           div.className = "property";
           div.innerHTML = `
