@@ -1,4 +1,3 @@
-<!-- الكود هنا مختصر للعرض -->
 <!DOCTYPE html>
 <html lang="ar">
 <head>
@@ -82,7 +81,11 @@
       padding: 0.4rem 0.8rem;
       border-radius: 6px;
       margin-top: 0.5rem;
+      margin-left: 0.5rem;
       float: left;
+    }
+    .share-btn.delete {
+      background: #b02a2a;
     }
     .filter-bar {
       display: flex;
@@ -229,6 +232,7 @@
         <p><strong>الوصف:</strong> ${prop.desc}</p>
         <p><strong>الكود:</strong> ${prop.code} 
           <button class="share-btn" onclick="share('${prop.code}', '${prop.desc}')">مشاركة</button>
+          <button class="share-btn delete" onclick="deleteProperty('${prop.code}')">حذف</button>
         </p>
       `;
       listings.appendChild(div);
@@ -238,6 +242,25 @@
   function share(code, desc) {
     const text = `إعلان رقم ${code}: ${desc}\nرابط الصفحة: ${window.location.href}`;
     navigator.share ? navigator.share({ text }) : alert("انسخ الرابط: " + text);
+  }
+
+  function deleteProperty(code) {
+    if (confirm("هل أنت متأكد من حذف هذا العقار؟")) {
+      db.ref("properties").once("value", snapshot => {
+        snapshot.forEach(child => {
+          if (child.val().code === code) {
+            db.ref("properties/" + child.key).remove()
+              .then(() => {
+                alert("تم حذف العقار.");
+                displayProperties();
+              })
+              .catch(err => {
+                alert("حدث خطأ أثناء الحذف: " + err.message);
+              });
+          }
+        });
+      });
+    }
   }
 
   function logout() {
