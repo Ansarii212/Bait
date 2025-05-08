@@ -323,22 +323,6 @@
   }
 
 
-// دالة تحديث عدد الإعجابات وحالة الزر
-function updateLikeCount(code) {
-  const countRef = db.ref("likes/" + code);
-
-  countRef.on("value", snapshot => {
-    const likes = snapshot.val() || {};
-    const count = Object.keys(likes).length;
-
-    document.getElementById("like-count-" + code).innerText = `${count} إعجاب`;
-
-    const isLiked = likes.hasOwnProperty(userId);
-    const btn = document.getElementById("like-button-" + code);
-    btn.innerText = isLiked ? "إلغاء الإعجاب" : "إعجاب";
-  });
-}
-
   function logout() {
     if (confirm("هل تريد تسجيل الخروج؟")) {
       localStorage.removeItem("currentUser");
