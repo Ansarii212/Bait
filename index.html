@@ -1,171 +1,154 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="ar">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>عقارات جدة</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>صفحة تفاعلية</title>
   <style>
     body {
-      font-family: 'Arial', sans-serif;
-      background-color: #f3f0ea;
+      font-family: Arial, sans-serif;
+      background-color: #f9f9f9;
+      color: #333;
       margin: 0;
       padding: 0;
-      text-align: center;
     }
-    header {
-      background-color: #5e412f;
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+    .btn {
+      background-color: #4CAF50;
       color: white;
-      padding: 15px;
-      font-size: 1.5em;
-    }
-    #search-section {
-      margin: 20px auto;
-      display: flex;
-      justify-content: center;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-    #code-input {
-      padding: 10px;
-      font-size: 16px;
-      width: 200px;
-      border-radius: 5px;
-      border: 1px solid #ccc;
-    }
-    #search-button {
+      border: none;
       padding: 10px 20px;
       font-size: 16px;
-      background-color: #8a6d3b;
-      color: white;
-      border: none;
-      border-radius: 5px;
       cursor: pointer;
+      border-radius: 5px;
+      margin: 10px 0;
     }
-    #search-button:hover {
-      background-color: #a07945;
+    .btn:disabled {
+      background-color: #ccc;
+      cursor: not-allowed;
     }
-    .property {
-      background: white;
-      margin: 10px auto;
-      padding: 15px;
-      width: 90%;
-      max-width: 400px;
-      border-radius: 8px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-      position: relative;
-    }
-    .property button {
+    .like-btn {
+      display: flex;
+      align-items: center;
       margin-top: 10px;
     }
-    .delete-button {
-      background-color: #c9302c;
-      color: white;
+    .like-btn button {
+      background-color: #ff8c00;
       border: none;
-      padding: 8px 12px;
-      border-radius: 4px;
-      cursor: pointer;
-    }
-    .like-button {
-      background-color: #5bc0de;
       color: white;
-      border: none;
-      padding: 6px 10px;
-      border-radius: 4px;
+      padding: 8px 15px;
+      font-size: 14px;
       cursor: pointer;
-      display: block;
-      margin: 5px auto 0;
+      border-radius: 5px;
     }
-    .like-count {
-      font-size: 12px;
+    .like-btn span {
+      margin-left: 10px;
+      font-size: 14px;
       color: #555;
-      margin-top: 2px;
     }
-    @media (max-width: 600px) {
-      #code-input {
-        width: 100%;
-      }
-      .property {
-        width: 95%;
-      }
+    .search-bar {
+      display: flex;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    .search-bar input {
+      width: 90%;
+      padding: 10px;
+      font-size: 16px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      margin-right: 10px;
+    }
+    .search-bar button {
+      padding: 10px 15px;
+      font-size: 16px;
+      background-color: #2196F3;
+      color: white;
+      border: none;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+    .error-message {
+      color: red;
+      font-size: 14px;
+      margin-top: 5px;
+    }
+    .actions {
+      display: flex;
+      justify-content: space-between;
+    }
+    .btn-delete {
+      background-color: red;
+    }
+    .btn-exit {
+      background-color: gray;
     }
   </style>
 </head>
 <body>
 
-<header>
-  عقارات جدة
-</header>
+  <div class="container">
+    <h1>صفحة تفاعلية</h1>
 
-<section id="search-section">
-  <input type="text" id="code-input" placeholder="أدخل كود العقار">
-  <button id="search-button">بحث</button>
-</section>
+    <div class="actions">
+      <button class="btn btn-delete">حذف</button>
+      <div class="like-btn">
+        <button>إعجاب</button>
+        <span id="like-count">0</span>
+      </div>
+    </div>
 
-<div id="property-container"></div>
+    <button class="btn btn-exit">تسجيل خروج</button>
 
-<script>
-  const properties = [
-    { code: "A123", name: "شقة فاخرة في التحلية" },
-    { code: "B456", name: "فيلا مستقلة في أبحر" },
-    { code: "C789", name: "استوديو في السلامة" }
-  ];
+    <div class="search-bar">
+      <input type="text" id="search-code" placeholder="ابحث عن الكود">
+      <button id="search-btn" class="btn">بحث</button>
+    </div>
 
-  const container = document.getElementById('property-container');
-  const input = document.getElementById('code-input');
-  const button = document.getElementById('search-button');
+    <div class="error-message" id="error-message"></div>
+  </div>
 
-  function renderProperty(prop) {
-    const div = document.createElement('div');
-    div.className = 'property';
-    div.innerHTML = `
-      <h3>${prop.name}</h3>
-      <p>الكود: ${prop.code}</p>
-      <button class="delete-button">حذف</button>
-      <button class="like-button">إعجاب</button>
-      <div class="like-count" id="likes-${prop.code}">${getLikes(prop.code)} إعجاب</div>
-    `;
+  <script>
+    // تعديل عدد الإعجابات
+    let likeCount = 0;
+    const likeButton = document.querySelector('.like-btn button');
+    const likeCountSpan = document.getElementById('like-count');
+    
+    likeButton.addEventListener('click', () => {
+      likeCount++;
+      likeCountSpan.textContent = likeCount;
+    });
 
-    div.querySelector('.delete-button').onclick = () => div.remove();
+    // البحث عن الكود
+    const searchButton = document.getElementById('search-btn');
+    const searchInput = document.getElementById('search-code');
+    const errorMessage = document.getElementById('error-message');
 
-    div.querySelector('.like-button').onclick = () => handleLike(prop.code);
+    searchButton.addEventListener('click', () => {
+      const searchValue = searchInput.value.trim();
 
-    container.appendChild(div);
-  }
+      if (searchValue === '') {
+        errorMessage.textContent = 'يرجى إدخال الكود';
+        return;
+      }
 
-  function getLikes(code) {
-    return parseInt(localStorage.getItem(`likes-${code}`)) || 0;
-  }
-
-  function hasLiked(code) {
-    return localStorage.getItem(`liked-${code}`) === "true";
-  }
-
-  function handleLike(code) {
-    if (hasLiked(code)) {
-      alert("لقد قمت بالإعجاب مسبقاً.");
-      return;
-    }
-    let likes = getLikes(code) + 1;
-    localStorage.setItem(`likes-${code}`, likes);
-    localStorage.setItem(`liked-${code}`, "true");
-    document.getElementById(`likes-${code}`).textContent = `${likes} إعجاب`;
-  }
-
-  button.onclick = () => {
-    const val = input.value.trim().toUpperCase();
-    container.innerHTML = '';
-    if (val === "") {
-      container.innerHTML = `<p style="color:red;">الرجاء إدخال كود</p>`;
-      return;
-    }
-    const found = properties.find(p => p.code.toUpperCase() === val);
-    if (found) {
-      renderProperty(found);
-    } else {
-      container.innerHTML = `<p style="color:red;">هذا الكود غير موجود</p>`;
-    }
-  };
-</script>
+      // محاكاة البحث في قاعدة بيانات أو بيانات ثابتة
+      const codes = ['code123', 'code456', 'code789'];
+      if (!codes.includes(searchValue)) {
+        errorMessage.textContent = 'لا يوجد كود بهذا الأسم';
+      } else {
+        errorMessage.textContent = '';
+        alert('تم العثور على الكود');
+      }
+    });
+  </script>
 
 </body>
 </html>
