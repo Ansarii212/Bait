@@ -120,11 +120,12 @@
   </style>
 </head>
 <body>
-
+<button id="like-button-123" onclick="toggleLike('123')">إعجاب</button>
+<span id="like-count-123">0 إعجاب</span>
 <header>
   <h1>عقارات جدة</h1>
   <button class="logout-btn" onclick="logout()">
-    <i>⎋</i> خروج
+    <i>⎋</i>
   </button>
 </header>
 
@@ -322,12 +323,39 @@
     });
   }
 
-  function updateLikeCount(code) {
-    db.ref("likes/" + code).on("value", snapshot => {
-      const count = snapshot.val() || 0;
-      document.getElementById("like-count-" + code).innerText = `${count} إعجاب`;
-    });
-  }
+  function toggleLike(code) {
+  const likeRef = db.ref(`likes/${code}/${userId}`);
+
+  likeRef.once("value").then(snapshot => {
+    if (snapshot.exists()) {
+      // المستخدم سبق وأعجب - نحذفه
+      likeRef.remove().then(() => {
+        document.getElementById("like-button-" + code).innerText = "إعجاب";
+      });
+    } else {
+      // المستخدم لم يعجب - نضيف إعجاب
+      likeRef.set(true).then(() => {
+        document.getElementById("like-button-" + code).innerText = "إلغاء الإعجاب";
+      });
+    }
+  });
+}
+
+// دالة تحديث عدد الإعجابات وحالة الزر
+function updateLikeCount(code) {
+  const countRef = db.ref("likes/" + code);
+
+  countRef.on("value", snapshot => {
+    const likes = snapshot.val() || {};
+    const count = Object.keys(likes).length;
+
+    document.getElementById("like-count-" + code).innerText = `${count} إعجاب`;
+
+    const isLiked = likes.hasOwnProperty(userId);
+    const btn = document.getElementById("like-button-" + code);
+    btn.innerText = isLiked ? "إلغاء الإعجاب" : "إعجاب";
+  });
+}
 
   function logout() {
     if (confirm("هل تريد تسجيل الخروج؟")) {
