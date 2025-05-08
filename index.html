@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>عقارات جدة</title>
   <style>
     body {
@@ -125,11 +125,9 @@
       <div class="like-count" id="likes-${prop.code}">${getLikes(prop.code)} إعجاب</div>
     `;
 
-    const deleteBtn = div.querySelector('.delete-button');
-    deleteBtn.onclick = () => div.remove();
+    div.querySelector('.delete-button').onclick = () => div.remove();
 
-    const likeBtn = div.querySelector('.like-button');
-    likeBtn.onclick = () => handleLike(prop.code);
+    div.querySelector('.like-button').onclick = () => handleLike(prop.code);
 
     container.appendChild(div);
   }
@@ -144,20 +142,23 @@
 
   function handleLike(code) {
     if (hasLiked(code)) {
-      alert("لقد أعجبت بهذا العقار بالفعل.");
+      alert("لقد قمت بالإعجاب مسبقاً.");
       return;
     }
     let likes = getLikes(code) + 1;
     localStorage.setItem(`likes-${code}`, likes);
     localStorage.setItem(`liked-${code}`, "true");
-    const likeDiv = document.getElementById(`likes-${code}`);
-    if (likeDiv) likeDiv.textContent = `${likes} إعجاب`;
+    document.getElementById(`likes-${code}`).textContent = `${likes} إعجاب`;
   }
 
   button.onclick = () => {
     const val = input.value.trim().toUpperCase();
     container.innerHTML = '';
-    const found = properties.find(p => p.code === val);
+    if (val === "") {
+      container.innerHTML = `<p style="color:red;">الرجاء إدخال كود</p>`;
+      return;
+    }
+    const found = properties.find(p => p.code.toUpperCase() === val);
     if (found) {
       renderProperty(found);
     } else {
