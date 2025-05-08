@@ -7,30 +7,33 @@
   <style>
     body {
       font-family: 'Arial', sans-serif;
-      background: #e0f4ff;
+      background: #e6f4ff;
       margin: 0;
       padding: 0;
       direction: rtl;
     }
     header {
-      background: linear-gradient(135deg, #6fb1fc, #a1c4fd);
+      background-image: linear-gradient(to right, #4da6ff, #3399ff);
       color: white;
-      padding: 1.5rem;
+      padding: 1rem;
       text-align: center;
       position: relative;
-      border-bottom: 3px solid #5b9bd5;
     }
     .logout-btn {
       position: absolute;
       left: 1rem;
       top: 1rem;
       background: white;
-      color: #0073e6;
+      color: #3399ff;
       border: none;
-      padding: 0.5rem 1rem;
+      padding: 0.3rem 0.7rem;
       cursor: pointer;
       border-radius: 4px;
+      font-size: 0.9rem;
       display: none;
+    }
+    .logout-btn i {
+      margin-left: 5px;
     }
     .container {
       max-width: 800px;
@@ -43,12 +46,12 @@
       margin-bottom: 1rem;
       border: 1px solid #ccc;
       border-radius: 8px;
-      background: #f5fbff;
+      background: #ffffff;
       color: #333;
     }
     button {
       padding: 0.7rem 1.5rem;
-      background: #0073e6;
+      background: #3399ff;
       color: white;
       border: none;
       cursor: pointer;
@@ -65,19 +68,19 @@
       background: white;
       padding: 1rem;
       margin-bottom: 1rem;
-      border-left: 5px solid #0073e6;
+      border-left: 5px solid #3399ff;
       border-radius: 8px;
     }
     .property img {
       width: 100%;
       max-height: 200px;
       object-fit: contain;
-      background: #f2faff;
+      background: #f2f9ff;
       border-radius: 6px;
       margin-bottom: 1rem;
     }
     .share-btn {
-      background: #0073e6;
+      background: #3399ff;
       color: white;
       border: none;
       padding: 0.4rem 0.8rem;
@@ -98,11 +101,21 @@
     .filter-bar select {
       flex: 1;
     }
-    .timestamp {
-      clear: both;
-      margin-top: 1rem;
-      color: #666;
-      font-size: 0.9rem;
+    .search-bar {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
+    }
+    .search-bar input {
+      flex: 2;
+    }
+    .search-bar button {
+      flex: 1;
+    }
+    .time-text {
+      font-size: 0.8rem;
+      color: gray;
+      margin-top: 0.3rem;
     }
   </style>
 </head>
@@ -110,7 +123,9 @@
 
 <header>
   <h1>عقارات جدة</h1>
-  <button class="logout-btn" id="logoutBtn" onclick="logout()">تسجيل الخروج</button>
+  <button class="logout-btn" onclick="logout()">
+    <i>⎋</i> خروج
+  </button>
 </header>
 
 <div class="container">
@@ -125,30 +140,36 @@
     </div>
   </div>
 
-  <div id="filters" class="filter-bar" style="display:none;">
-    <select onchange="filterProperties()" id="sortFilter">
-      <option value="new">الأحدث</option>
-      <option value="old">الأقدم</option>
-      <option value="high">الأغلى</option>
-      <option value="low">الأرخص</option>
-    </select>
-    <select onchange="filterProperties()" id="districtFilter">
-      <option value="">كل الأحياء</option>
-      <option>الصفا</option>
-      <option>السلامة</option>
-      <option>الفيصلية</option>
-      <option>الروضة</option>
-      <option>النزهة</option>
-      <option>الحمراء</option>
-      <option>المروة</option>
-      <option>البوادي</option>
-      <option>بني مالك</option>
-      <option>العزيزية</option>
-      <option>الرحاب</option>
-      <option>الشاطئ</option>
-      <option>النهضة</option>
-      <option>الجامعة</option>
-    </select>
+  <div id="filters" style="display:none;">
+    <div class="filter-bar">
+      <select onchange="filterProperties()" id="sortFilter">
+        <option value="new">الأحدث</option>
+        <option value="old">الأقدم</option>
+        <option value="high">الأغلى</option>
+        <option value="low">الأرخص</option>
+      </select>
+      <select onchange="filterProperties()" id="districtFilter">
+        <option value="">كل الأحياء</option>
+        <option>الصفا</option>
+        <option>السلامة</option>
+        <option>الفيصلية</option>
+        <option>الروضة</option>
+        <option>النزهة</option>
+        <option>الحمراء</option>
+        <option>المروة</option>
+        <option>البوادي</option>
+        <option>بني مالك</option>
+        <option>العزيزية</option>
+        <option>الرحاب</option>
+        <option>الشاطئ</option>
+        <option>النهضة</option>
+        <option>الجامعة</option>
+      </select>
+    </div>
+    <div class="search-bar">
+      <input type="text" id="searchCode" placeholder="أدخل كود الإعلان">
+      <button onclick="searchByCode()">بحث</button>
+    </div>
   </div>
 
   <div id="listings"></div>
@@ -156,7 +177,6 @@
 
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
-
 <script>
   const firebaseConfig = {
     apiKey: "AIzaSyCr4T8GLRxtf_6LNrokjKvmBOwSkuGO5yQ",
@@ -177,19 +197,18 @@
   function login() {
     const phone = document.getElementById("phone").value.trim();
     if (!phone) return;
-    document.getElementById("loginBox").style.display = "none";
     db.ref("users").once("value", snapshot => {
       const users = snapshot.val() || {};
       if (users[phone]) {
         currentUser = phone;
         localStorage.setItem("currentUser", phone);
-        document.getElementById("filters").style.display = "flex";
-        document.getElementById("logoutBtn").style.display = "block";
+        document.querySelector(".logout-btn").style.display = "block";
+        document.getElementById("loginBox").style.display = "none";
+        document.getElementById("filters").style.display = "block";
         displayProperties();
       } else {
         document.getElementById("loginNote").innerText = "ليس لديك حساب. رجاء التسجيل لتتمكن من الدخول";
         document.getElementById("registerBox").style.display = "block";
-        document.getElementById("loginBox").style.display = "block";
       }
     });
   }
@@ -213,10 +232,10 @@
     });
   }
 
-  function renderProperties() {
+  function renderProperties(list = null) {
     const sort = document.getElementById("sortFilter").value;
     const district = document.getElementById("districtFilter").value;
-    let filtered = [...properties];
+    let filtered = list || [...properties];
 
     if (district) {
       filtered = filtered.filter(p => p.district === district);
@@ -230,6 +249,7 @@
     const listings = document.getElementById("listings");
     listings.innerHTML = "";
     filtered.forEach(prop => {
+      const timeAgo = getTimeAgo(prop.timestamp);
       const div = document.createElement("div");
       div.className = "property";
       div.innerHTML = `
@@ -238,14 +258,30 @@
         <p><strong>الحي:</strong> ${prop.district}</p>
         <p><strong>السعر:</strong> ${prop.price}</p>
         <p><strong>الوصف:</strong> ${prop.desc}</p>
-        <p><strong>الكود:</strong> ${prop.code} 
+        <p><strong>الكود:</strong> ${prop.code}
           <button class="share-btn" onclick="share('${prop.code}', '${prop.desc}')">مشاركة</button>
           <button class="share-btn delete" onclick="deleteProperty('${prop.code}')">حذف</button>
         </p>
-        <div class="timestamp">${getTimeAgo(prop.timestamp)}</div>
+        <div class="time-text">${timeAgo}</div>
       `;
       listings.appendChild(div);
     });
+  }
+
+  function getTimeAgo(timestamp) {
+    const now = Date.now();
+    const diff = now - timestamp;
+    const minutes = Math.floor(diff / (1000 * 60));
+    const hours = Math.floor(diff / (1000 * 60 * 60));
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+    const weeks = Math.floor(days / 7);
+    const months = Math.floor(days / 30);
+    if (minutes < 1) return "الآن";
+    if (minutes < 60) return `منذ ${minutes} دقيقة`;
+    if (hours < 24) return `منذ ${hours} ساعة`;
+    if (days < 7) return `منذ ${days} يوم`;
+    if (weeks < 5) return `منذ ${weeks} أسبوع`;
+    return `منذ ${months} شهر`;
   }
 
   function share(code, desc) {
@@ -275,7 +311,7 @@
   function logout() {
     if (confirm("هل تريد تسجيل الخروج؟")) {
       localStorage.removeItem("currentUser");
-      document.getElementById("logoutBtn").style.display = "none";
+      document.querySelector(".logout-btn").style.display = "none";
       location.reload();
     }
   }
@@ -284,29 +320,25 @@
     renderProperties();
   }
 
-  function getTimeAgo(timestamp) {
-    const seconds = Math.floor((Date.now() - timestamp) / 1000);
-    if (seconds < 60) return "منذ لحظات";
-    const minutes = Math.floor(seconds / 60);
-    if (minutes < 60) return `منذ ${minutes} دقيقة`;
-    const hours = Math.floor(minutes / 60);
-    if (hours < 24) return `منذ ${hours} ساعة`;
-    const days = Math.floor(hours / 24);
-    if (days < 7) return `منذ ${days} يوم`;
-    const weeks = Math.floor(days / 7);
-    if (weeks < 4) return `منذ ${weeks} أسبوع`;
-    const months = Math.floor(days / 30);
-    return `منذ ${months} شهر`;
+  function searchByCode() {
+    const code = document.getElementById("searchCode").value.trim();
+    if (!code) return;
+    const found = properties.filter(p => p.code.toLowerCase() === code.toLowerCase());
+    if (found.length) {
+      renderProperties(found);
+    } else {
+      alert("لا يوجد إعلان بهذا الكود.");
+    }
   }
 
   window.onload = () => {
     if (currentUser) {
+      document.querySelector(".logout-btn").style.display = "block";
       document.getElementById("loginBox").style.display = "none";
-      document.getElementById("filters").style.display = "flex";
-      document.getElementById("logoutBtn").style.display = "block";
+      document.getElementById("filters").style.display = "block";
       displayProperties();
     }
-  }
+  };
 </script>
 
 </body>
