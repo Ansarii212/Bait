@@ -96,6 +96,12 @@
     .filter-bar select {
       flex: 1;
     }
+    .timestamp {
+      clear: both;
+      margin-top: 1rem;
+      color: #666;
+      font-size: 0.9rem;
+    }
   </style>
 </head>
 <body>
@@ -146,7 +152,6 @@
   <div id="listings"></div>
 </div>
 
-<!-- Firebase -->
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 
@@ -234,6 +239,7 @@
           <button class="share-btn" onclick="share('${prop.code}', '${prop.desc}')">مشاركة</button>
           <button class="share-btn delete" onclick="deleteProperty('${prop.code}')">حذف</button>
         </p>
+        <div class="timestamp">${getTimeAgo(prop.timestamp)}</div>
       `;
       listings.appendChild(div);
     });
@@ -272,6 +278,21 @@
 
   function filterProperties() {
     renderProperties();
+  }
+
+  function getTimeAgo(timestamp) {
+    const seconds = Math.floor((Date.now() - timestamp) / 1000);
+    if (seconds < 60) return "منذ لحظات";
+    const minutes = Math.floor(seconds / 60);
+    if (minutes < 60) return `منذ ${minutes} دقيقة`;
+    const hours = Math.floor(minutes / 60);
+    if (hours < 24) return `منذ ${hours} ساعة`;
+    const days = Math.floor(hours / 24);
+    if (days < 7) return `منذ ${days} يوم`;
+    const weeks = Math.floor(days / 7);
+    if (weeks < 4) return `منذ ${weeks} أسبوع`;
+    const months = Math.floor(days / 30);
+    return `منذ ${months} شهر`;
   }
 
   window.onload = () => {
