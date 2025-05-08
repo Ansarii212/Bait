@@ -314,6 +314,24 @@
       });
     }
   }
+function searchByCode() {
+  const code = document.getElementById("searchCode").value.trim();
+  if (!code) return;
+
+  const result = properties.filter(p => p.code == code);
+  if (result.length > 0) {
+    renderProperties(result);
+  } else {
+    document.getElementById("listings").innerHTML = "<p>لا يوجد إعلان بهذا الكود.</p>";
+  }
+}
+  
+  function updateLikeCount(code) {
+    db.ref("likes/" + code).on("value", snapshot => {
+      const count = snapshot.val() || 0;
+      document.getElementById("like-count-" + code).innerText = `${count} إعجاب`;
+    });
+  }
 
   function updateLikeCount(code) {
     db.ref("likes/" + code).on("value", snapshot => {
