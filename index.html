@@ -1,4 +1,4 @@
-‏<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ar">
 <head>
   <meta charset="UTF-8" />
@@ -194,6 +194,13 @@
   let currentUser = localStorage.getItem("currentUser") || "";
   let properties = [];
 
+  if (currentUser) {
+    document.querySelector(".logout-btn").style.display = "block";
+    document.getElementById("loginBox").style.display = "none";
+    document.getElementById("filters").style.display = "block";
+    displayProperties();
+  }
+
   function login() {
     const phone = document.getElementById("phone").value.trim();
     if (!phone) return;
@@ -202,10 +209,7 @@
       if (users[phone]) {
         currentUser = phone;
         localStorage.setItem("currentUser", phone);
-        document.querySelector(".logout-btn").style.display = "block";
-        document.getElementById("loginBox").style.display = "none";
-        document.getElementById("filters").style.display = "block";
-        displayProperties();
+        location.reload();
       } else {
         document.getElementById("loginNote").innerText = "ليس لديك حساب. رجاء التسجيل لتتمكن من الدخول";
         document.getElementById("registerBox").style.display = "block";
@@ -262,17 +266,16 @@
           <button class="share-btn" onclick="share('${prop.code}', '${prop.desc}')">مشاركة</button>
           <button class="share-btn delete" onclick="deleteProperty('${prop.code}')">حذف</button>
         </p>
+        <div>
+          <button onclick="likeProperty('${prop.code}')" class="share-btn">إعجاب</button>
+          <span id="like-count-${prop.code}" style="margin-right: 10px;">0 إعجاب</span>
+        </div>
         <div class="time-text">${timeAgo}</div>
       `;
       listings.appendChild(div);
+      updateLikeCount(prop.code);
     });
   }
-  <div>
-  <button onclick="likeProperty('${prop.code}')" class="share-btn">إعجاب</button>
-  <span id="like-count-${prop.code}" style="margin-right: 10px;">0 إعجاب</span>
-</div>
-
-  updateLikeCount(prop.code);
 
   function getTimeAgo(timestamp) {
     const now = Date.now();
@@ -314,10 +317,23 @@
     }
   }
 
+  function likeProperty(code) {
+    const likeRef = db.ref("likes/" + code);
+    likeRef.transaction(current => (current || 0) + 1).then(() => {
+      updateLikeCount(code);
+    });
+  }
+
+  function updateLikeCount(code) {
+    db.ref("likes/" + code).on("value", snapshot => {
+      const count = snapshot.val() || 0;
+      document.getElementById("like-count-" + code).innerText = `${count} إعجاب`;
+    });
+  }
+
   function logout() {
     if (confirm("هل تريد تسجيل الخروج؟")) {
       localStorage.removeItem("currentUser");
-      document.querySelector(".logout-btn").style.display = "none";
       location.reload();
     }
   }
@@ -336,34 +352,6 @@
       alert("لا يوجد إعلان بهذا الكود.");
     }
   }
-  function likeProperty(code) {
-  const likeRef = db.ref("likes/" + code);
-  likeRef.transaction(currentLikes => {
-    return (currentLikes || 0) + 1;
-  }).then(() => {
-    updateLikeCount(code);
-  });
-}
-
-function updateLikeCount(code) {
-  db.ref("likes/" + code).once("value", snapshot => {
-    const count = snapshot.val() || 0;
-    const likeSpan = document.getElementById("like-count-" + code);
-    if (likeSpan) {
-      likeSpan.textContent = `${count} إعجاب`;
-    }
-  });
-}ض
-
-  window.onload = () => {
-    if (currentUser) {
-      document.querySelector(".logout-btn").style.display = "block";
-      document.getElementById("loginBox").style.display = "none";
-      document.getElementById("filters").style.display = "block";
-      displayProperties();
-    }
-  };
 </script>
-
 </body>
 </html>
