@@ -1,154 +1,357 @@
 <!DOCTYPE html>
 <html lang="ar">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>صفحة تفاعلية</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>عقارات جدة</title>
   <style>
     body {
-      font-family: Arial, sans-serif;
-      background-color: #f9f9f9;
-      color: #333;
+      font-family: 'Arial', sans-serif;
+      background: #e6f4ff;
       margin: 0;
       padding: 0;
+      direction: rtl;
+    }
+    header {
+      background-image: linear-gradient(to right, #4da6ff, #3399ff);
+      color: white;
+      padding: 1rem;
+      text-align: center;
+      position: relative;
+    }
+    .logout-btn {
+      position: absolute;
+      left: 1rem;
+      top: 1rem;
+      background: white;
+      color: #3399ff;
+      border: none;
+      padding: 0.3rem 0.7rem;
+      cursor: pointer;
+      border-radius: 4px;
+      font-size: 0.9rem;
+      display: none;
+    }
+    .logout-btn i {
+      margin-left: 5px;
     }
     .container {
       max-width: 800px;
-      margin: 0 auto;
-      padding: 20px;
-      background-color: white;
+      margin: auto;
+      padding: 1rem;
+    }
+    input, select {
+      width: 100%;
+      padding: 0.7rem;
+      margin-bottom: 1rem;
+      border: 1px solid #ccc;
       border-radius: 8px;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      background: #ffffff;
+      color: #333;
     }
-    .btn {
-      background-color: #4CAF50;
+    button {
+      padding: 0.7rem 1.5rem;
+      background: #3399ff;
       color: white;
       border: none;
-      padding: 10px 20px;
-      font-size: 16px;
       cursor: pointer;
-      border-radius: 5px;
-      margin: 10px 0;
+      border-radius: 8px;
     }
-    .btn:disabled {
-      background-color: #ccc;
-      cursor: not-allowed;
+    .login-box {
+      background: white;
+      padding: 2rem;
+      margin-top: 2rem;
+      text-align: center;
+      border-radius: 8px;
     }
-    .like-btn {
+    .property {
+      background: white;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      border-left: 5px solid #3399ff;
+      border-radius: 8px;
+    }
+    .property img {
+      width: 100%;
+      max-height: 200px;
+      object-fit: contain;
+      background: #f2f9ff;
+      border-radius: 6px;
+      margin-bottom: 1rem;
+    }
+    .share-btn {
+      background: #3399ff;
+      color: white;
+      border: none;
+      padding: 0.4rem 0.8rem;
+      border-radius: 6px;
+      margin-top: 0.5rem;
+      margin-left: 0.5rem;
+      float: left;
+    }
+    .share-btn.delete {
+      background: #b02a2a;
+    }
+    .filter-bar {
       display: flex;
-      align-items: center;
-      margin-top: 10px;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
     }
-    .like-btn button {
-      background-color: #ff8c00;
-      border: none;
-      color: white;
-      padding: 8px 15px;
-      font-size: 14px;
-      cursor: pointer;
-      border-radius: 5px;
-    }
-    .like-btn span {
-      margin-left: 10px;
-      font-size: 14px;
-      color: #555;
+    .filter-bar select {
+      flex: 1;
     }
     .search-bar {
       display: flex;
-      align-items: center;
-      margin-bottom: 20px;
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
     }
     .search-bar input {
-      width: 90%;
-      padding: 10px;
-      font-size: 16px;
-      border-radius: 5px;
-      border: 1px solid #ccc;
-      margin-right: 10px;
+      flex: 2;
     }
     .search-bar button {
-      padding: 10px 15px;
-      font-size: 16px;
-      background-color: #2196F3;
-      color: white;
-      border: none;
-      cursor: pointer;
-      border-radius: 5px;
+      flex: 1;
     }
-    .error-message {
-      color: red;
-      font-size: 14px;
-      margin-top: 5px;
-    }
-    .actions {
-      display: flex;
-      justify-content: space-between;
-    }
-    .btn-delete {
-      background-color: red;
-    }
-    .btn-exit {
-      background-color: gray;
+    .time-text {
+      font-size: 0.8rem;
+      color: gray;
+      margin-top: 0.3rem;
     }
   </style>
 </head>
 <body>
 
-  <div class="container">
-    <h1>صفحة تفاعلية</h1>
+<header>
+  <h1>عقارات جدة</h1>
+  <button class="logout-btn" onclick="logout()">
+    <i>⎋</i> خروج
+  </button>
+</header>
 
-    <div class="actions">
-      <button class="btn btn-delete">حذف</button>
-      <div class="like-btn">
-        <button>إعجاب</button>
-        <span id="like-count">0</span>
-      </div>
+<div class="container">
+  <div id="loginBox" class="login-box">
+    <h2>تسجيل الدخول برقم الجوال</h2>
+    <input type="text" id="phone" placeholder="مثال: 0555555555">
+    <button onclick="login()">تسجيل الدخول</button>
+    <p id="loginNote" style="color: red;"></p>
+    <div id="registerBox" style="display:none;">
+      <input type="text" id="newUserPhone" placeholder="أدخل رقمك للتسجيل">
+      <button onclick="register()">تسجيل</button>
     </div>
-
-    <button class="btn btn-exit">تسجيل خروج</button>
-
-    <div class="search-bar">
-      <input type="text" id="search-code" placeholder="ابحث عن الكود">
-      <button id="search-btn" class="btn">بحث</button>
-    </div>
-
-    <div class="error-message" id="error-message"></div>
   </div>
 
-  <script>
-    // تعديل عدد الإعجابات
-    let likeCount = 0;
-    const likeButton = document.querySelector('.like-btn button');
-    const likeCountSpan = document.getElementById('like-count');
-    
-    likeButton.addEventListener('click', () => {
-      likeCount++;
-      likeCountSpan.textContent = likeCount;
-    });
+  <div id="filters" style="display:none;">
+    <div class="filter-bar">
+      <select onchange="filterProperties()" id="sortFilter">
+        <option value="new">الأحدث</option>
+        <option value="old">الأقدم</option>
+        <option value="high">الأغلى</option>
+        <option value="low">الأرخص</option>
+      </select>
+      <select onchange="filterProperties()" id="districtFilter">
+        <option value="">كل الأحياء</option>
+        <option>الصفا</option>
+        <option>السلامة</option>
+        <option>الفيصلية</option>
+        <option>الروضة</option>
+        <option>النزهة</option>
+        <option>الحمراء</option>
+        <option>المروة</option>
+        <option>البوادي</option>
+        <option>بني مالك</option>
+        <option>العزيزية</option>
+        <option>الرحاب</option>
+        <option>الشاطئ</option>
+        <option>النهضة</option>
+        <option>الجامعة</option>
+      </select>
+    </div>
+    <div class="search-bar">
+      <input type="text" id="searchCode" placeholder="أدخل كود الإعلان">
+      <button onclick="searchByCode()">بحث</button>
+    </div>
+  </div>
 
-    // البحث عن الكود
-    const searchButton = document.getElementById('search-btn');
-    const searchInput = document.getElementById('search-code');
-    const errorMessage = document.getElementById('error-message');
+  <div id="listings"></div>
+</div>
 
-    searchButton.addEventListener('click', () => {
-      const searchValue = searchInput.value.trim();
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyCr4T8GLRxtf_6LNrokjKvmBOwSkuGO5yQ",
+    authDomain: "hamsa-6009e.firebaseapp.com",
+    databaseURL: "https://hamsa-6009e-default-rtdb.firebaseio.com/",
+    projectId: "hamsa-6009e",
+    storageBucket: "hamsa-6009e.appspot.com",
+    messagingSenderId: "998163671039",
+    appId: "1:998163671039:web:d1930ea5b71a3a3fc729ca"
+  };
 
-      if (searchValue === '') {
-        errorMessage.textContent = 'يرجى إدخال الكود';
-        return;
-      }
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.database();
 
-      // محاكاة البحث في قاعدة بيانات أو بيانات ثابتة
-      const codes = ['code123', 'code456', 'code789'];
-      if (!codes.includes(searchValue)) {
-        errorMessage.textContent = 'لا يوجد كود بهذا الأسم';
+  let currentUser = localStorage.getItem("currentUser") || "";
+  let properties = [];
+
+  if (currentUser) {
+    document.querySelector(".logout-btn").style.display = "block";
+    document.getElementById("loginBox").style.display = "none";
+    document.getElementById("filters").style.display = "block";
+    displayProperties();
+  }
+
+  function login() {
+    const phone = document.getElementById("phone").value.trim();
+    if (!phone) return;
+    db.ref("users").once("value", snapshot => {
+      const users = snapshot.val() || {};
+      if (users[phone]) {
+        currentUser = phone;
+        localStorage.setItem("currentUser", phone);
+        location.reload();
       } else {
-        errorMessage.textContent = '';
-        alert('تم العثور على الكود');
+        document.getElementById("loginNote").innerText = "ليس لديك حساب. رجاء التسجيل لتتمكن من الدخول";
+        document.getElementById("registerBox").style.display = "block";
       }
     });
-  </script>
+  }
 
+  function register() {
+    const phone = document.getElementById("newUserPhone").value.trim();
+    if (!phone) return;
+    db.ref("users/" + phone).set({ registered: true }, () => {
+      alert("تم التسجيل بنجاح");
+      location.reload();
+    });
+  }
+
+  function displayProperties() {
+    db.ref("properties").once("value", snapshot => {
+      properties = [];
+      snapshot.forEach(child => {
+        properties.push(child.val());
+      });
+      renderProperties();
+    });
+  }
+
+  function renderProperties(list = null) {
+    const sort = document.getElementById("sortFilter").value;
+    const district = document.getElementById("districtFilter").value;
+    let filtered = list || [...properties];
+
+    if (district) {
+      filtered = filtered.filter(p => p.district === district);
+    }
+
+    if (sort === "new") filtered.sort((a, b) => b.timestamp - a.timestamp);
+    if (sort === "old") filtered.sort((a, b) => a.timestamp - b.timestamp);
+    if (sort === "high") filtered.sort((a, b) => b.price - a.price);
+    if (sort === "low") filtered.sort((a, b) => a.price - b.price);
+
+    const listings = document.getElementById("listings");
+    listings.innerHTML = "";
+    filtered.forEach(prop => {
+      const timeAgo = getTimeAgo(prop.timestamp);
+      const div = document.createElement("div");
+      div.className = "property";
+      div.innerHTML = `
+        <img src="${prop.image}" alt="صورة العقار">
+        <h4>${prop.type}</h4>
+        <p><strong>الحي:</strong> ${prop.district}</p>
+        <p><strong>السعر:</strong> ${prop.price}</p>
+        <p><strong>الوصف:</strong> ${prop.desc}</p>
+        <p><strong>الكود:</strong> ${prop.code}
+          <button class="share-btn" onclick="share('${prop.code}', '${prop.desc}')">مشاركة</button>
+          <button class="share-btn delete" onclick="deleteProperty('${prop.code}')">حذف</button>
+        </p>
+        <div>
+          <button onclick="likeProperty('${prop.code}')" class="share-btn">إعجاب</button>
+          <span id="like-count-${prop.code}" style="margin-right: 10px;">0 إعجاب</span>
+        </div>
+        <div class="time-text">${timeAgo}</div>
+      `;
+      listings.appendChild(div);
+      updateLikeCount(prop.code);
+    });
+  }
+
+  function getTimeAgo(timestamp) {
+    const now = Date.now();
+    const diff = now - timestamp;
+    const minutes = Math.floor(diff / (1000 * 60));
+    const hours = Math.floor(diff / (1000 * 60 * 60));
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+    const weeks = Math.floor(days / 7);
+    const months = Math.floor(days / 30);
+    if (minutes < 1) return "الآن";
+    if (minutes < 60) return `منذ ${minutes} دقيقة`;
+    if (hours < 24) return `منذ ${hours} ساعة`;
+    if (days < 7) return `منذ ${days} يوم`;
+    if (weeks < 5) return `منذ ${weeks} أسبوع`;
+    return `منذ ${months} شهر`;
+  }
+
+  function share(code, desc) {
+    const text = `إعلان رقم ${code}: ${desc}\nرابط الصفحة: ${window.location.href}`;
+    navigator.share ? navigator.share({ text }) : alert("انسخ الرابط: " + text);
+  }
+
+  function deleteProperty(code) {
+    if (confirm("هل أنت متأكد من حذف هذا العقار؟")) {
+      db.ref("properties").once("value", snapshot => {
+        snapshot.forEach(child => {
+          if (child.val().code === code) {
+            db.ref("properties/" + child.key).remove()
+              .then(() => {
+                alert("تم حذف العقار.");
+                displayProperties();
+              })
+              .catch(err => {
+                alert("حدث خطأ أثناء الحذف: " + err.message);
+              });
+          }
+        });
+      });
+    }
+  }
+
+  function likeProperty(code) {
+    const likeRef = db.ref("likes/" + code);
+    likeRef.transaction(current => (current || 0) + 1).then(() => {
+      updateLikeCount(code);
+    });
+  }
+
+  function updateLikeCount(code) {
+    db.ref("likes/" + code).on("value", snapshot => {
+      const count = snapshot.val() || 0;
+      document.getElementById("like-count-" + code).innerText = `${count} إعجاب`;
+    });
+  }
+
+  function logout() {
+    if (confirm("هل تريد تسجيل الخروج؟")) {
+      localStorage.removeItem("currentUser");
+      location.reload();
+    }
+  }
+
+  function filterProperties() {
+    renderProperties();
+  }
+
+  function searchByCode() {
+    const code = document.getElementById("searchCode").value.trim();
+    if (!code) return;
+    const found = properties.filter(p => p.code.toLowerCase() === code.toLowerCase());
+    if (found.length) {
+      renderProperties(found);
+    } else {
+      alert("لا يوجد إعلان بهذا الكود.");
+    }
+  }
+</script>
 </body>
 </html>
