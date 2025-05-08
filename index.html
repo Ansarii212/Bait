@@ -1,165 +1,287 @@
-<!DOCTYPE html>
-<html lang="ar">
-<head>
-  <meta charset="UTF-8">
-  <title>عقارات</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      direction: rtl;
-      background: #f5f5f5;
+‏<!DOCTYPE html>
+‏<html lang="ar">
+‏<head>
+‏  <meta charset="UTF-8" />
+‏  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+‏  <title>عقارات جدة</title>
+‏  <style>
+‏    body {
+‏      font-family: 'Arial', sans-serif;
+‏      background: #f9f4ef;
+‏      margin: 0;
+‏      padding: 0;
+‏      direction: rtl;
     }
-    .property {
-      border: 2px dashed #aaa;
-      padding: 15px;
-      margin: 10px;
-      background: #fff;
-      border-radius: 10px;
+‏    header {
+‏      background: #7b4f2c;
+‏      color: white;
+‏      padding: 1rem;
+‏      text-align: center;
+‏      position: relative;
     }
-    .property img {
-      width: 100%;
-      max-width: 300px;
-      display: block;
-      margin-bottom: 10px;
-      border-radius: 10px;
+‏    .logout-btn {
+‏      position: absolute;
+‏      left: 1rem;
+‏      top: 1rem;
+‏      background: white;
+‏      color: #7b4f2c;
+‏      border: none;
+‏      padding: 0.5rem 1rem;
+‏      cursor: pointer;
+‏      border-radius: 4px;
     }
-    .share-btn {
-      background: #007bff;
-      color: white;
-      padding: 5px 10px;
-      border: none;
-      border-radius: 5px;
-      margin: 3px;
-      cursor: pointer;
+‏    .container {
+‏      max-width: 800px;
+‏      margin: auto;
+‏      padding: 1rem;
     }
-    .share-btn.delete {
-      background: red;
+‏    input, select {
+‏      width: 100%;
+‏      padding: 0.7rem;
+‏      margin-bottom: 1rem;
+‏      border: 1px solid #ccc;
+‏      border-radius: 8px;
+‏      background: #fff9f3;
+‏      color: #333;
     }
-  </style>
-</head>
-<body>
-
-  <h2 style="text-align:center">قائمة العقارات</h2>
-  <div id="properties-container"></div>
-
-  <!-- Firebase -->
-  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
-  
-  <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyDpK8DE3YrFqf_6_rHwe05fSeOCi2rVesQ",
-      authDomain: "estate-9777c.firebaseapp.com",
-      databaseURL: "https://estate-9777c-default-rtdb.firebaseio.com",
-      projectId: "estate-9777c",
-      storageBucket: "estate-9777c.appspot.com",
-      messagingSenderId: "89337839429",
-      appId: "1:89337839429:web:59f6ae1b6db6812f6815d1"
-    };
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
-
-    function displayProperties() {
-      const container = document.getElementById("properties-container");
-      container.innerHTML = "";
-
-      db.ref("properties").once("value", snapshot => {
-        snapshot.forEach(child => {
-          const prop = child.val();
-          const div = document.createElement("div");
-          div.className = "property";
-
-          div.innerHTML = `
-            <img src="${prop.image}" alt="صورة العقار" id="img-${prop.code}">
-            <input type="file" style="display:none;" onchange="previewImage(event, '${prop.code}')" id="upload-${prop.code}">
-            <h4 contenteditable="false" id="type-${prop.code}">${prop.type}</h4>
-            <p><strong>الحي:</strong> <span contenteditable="false" id="district-${prop.code}">${prop.district}</span></p>
-            <p><strong>السعر:</strong> <span contenteditable="false" id="price-${prop.code}">${prop.price}</span></p>
-            <p><strong>الوصف:</strong> <span contenteditable="false" id="desc-${prop.code}">${prop.desc}</span></p>
-            <p><strong>الكود:</strong> ${prop.code} 
-              <button class="share-btn" onclick="share('${prop.code}', '${prop.desc}')">مشاركة</button>
-              <button class="share-btn delete" onclick="deleteProperty('${prop.code}')">حذف</button>
-              <button class="share-btn" style="background:green;" onclick="enableEdit('${prop.code}')">تعديل</button>
-              <button class="share-btn" style="background:orange; display:none;" id="save-${prop.code}" onclick="saveEdit('${prop.code}')">حفظ</button>
-            </p>
-          `;
-
-          container.appendChild(div);
-        });
-      });
+‏    button {
+‏      padding: 0.7rem 1.5rem;
+‏      background: #7b4f2c;
+‏      color: white;
+‏      border: none;
+‏      cursor: pointer;
+‏      border-radius: 8px;
     }
+‏    .login-box {
+‏      background: white;
+‏      padding: 2rem;
+‏      margin-top: 2rem;
+‏      text-align: center;
+‏      border-radius: 8px;
+    }
+‏    .property {
+‏      background: white;
+‏      padding: 1rem;
+‏      margin-bottom: 1rem;
+‏      border-left: 5px solid #7b4f2c;
+‏      border-radius: 8px;
+    }
+‏    .property img {
+‏      width: 100%;
+‏      max-height: 200px;
+‏      object-fit: contain;
+‏      background: #f2e9e4;
+‏      border-radius: 6px;
+‏      margin-bottom: 1rem;
+    }
+‏    .share-btn {
+‏      background: #7b4f2c;
+‏      color: white;
+‏      border: none;
+‏      padding: 0.4rem 0.8rem;
+‏      border-radius: 6px;
+‏      margin-top: 0.5rem;
+‏      margin-left: 0.5rem;
+‏      float: left;
+    }
+‏    .share-btn.delete {
+‏      background: #b02a2a;
+    }
+‏    .filter-bar {
+‏      display: flex;
+‏      flex-wrap: wrap;
+‏      gap: 0.5rem;
+‏      margin-bottom: 1.5rem;
+    }
+‏    .filter-bar select {
+‏      flex: 1;
+    }
+‏  </style>
+‏</head>
+‏<body>
 
-    function share(code, desc) {
-      const text = `شاهد هذا العقار (كود: ${code}): ${desc}`;
-      if (navigator.share) {
-        navigator.share({ text });
-      } else {
-        prompt("انسخ النص للمشاركة:", text);
+‏<header>
+‏  <h1>عقارات جدة</h1>
+‏  <button class="logout-btn" onclick="logout()">تسجيل الخروج</button>
+‏</header>
+
+‏<div class="container">
+‏  <div id="loginBox" class="login-box">
+‏    <h2>تسجيل الدخول برقم الجوال</h2>
+‏    <input type="text" id="phone" placeholder="مثال: 0555555555">
+‏    <button onclick="login()">تسجيل الدخول</button>
+‏    <p id="loginNote" style="color: red;"></p>
+‏    <div id="registerBox" style="display:none;">
+‏      <input type="text" id="newUserPhone" placeholder="أدخل رقمك للتسجيل">
+‏      <button onclick="register()">تسجيل</button>
+‏    </div>
+‏  </div>
+
+‏  <div id="filters" class="filter-bar" style="display:none;">
+‏    <select onchange="filterProperties()" id="sortFilter">
+‏      <option value="new">الأحدث</option>
+‏      <option value="old">الأقدم</option>
+‏      <option value="high">الأغلى</option>
+‏      <option value="low">الأرخص</option>
+‏    </select>
+‏    <select onchange="filterProperties()" id="districtFilter">
+‏      <option value="">كل الأحياء</option>
+‏      <option>الصفا</option>
+‏      <option>السلامة</option>
+‏      <option>الفيصلية</option>
+‏      <option>الروضة</option>
+‏      <option>النزهة</option>
+‏      <option>الحمراء</option>
+‏      <option>المروة</option>
+‏      <option>البوادي</option>
+‏      <option>بني مالك</option>
+‏      <option>العزيزية</option>
+‏      <option>الرحاب</option>
+‏      <option>الشاطئ</option>
+‏      <option>النهضة</option>
+‏      <option>الجامعة</option>
+‏    </select>
+‏  </div>
+
+‏  <div id="listings"></div>
+‏</div>
+
+‏<!-- Firebase -->
+‏<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+‏<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+
+‏<script>
+‏  const firebaseConfig = {
+‏    apiKey: "AIzaSyCr4T8GLRxtf_6LNrokjKvmBOwSkuGO5yQ",
+‏    authDomain: "hamsa-6009e.firebaseapp.com",
+‏    databaseURL: "https://hamsa-6009e-default-rtdb.firebaseio.com/",
+‏    projectId: "hamsa-6009e",
+‏    storageBucket: "hamsa-6009e.appspot.com",
+‏    messagingSenderId: "998163671039",
+‏    appId: "1:998163671039:web:d1930ea5b71a3a3fc729ca"
+  };
+
+‏  firebase.initializeApp(firebaseConfig);
+‏  const db = firebase.database();
+
+‏  let currentUser = localStorage.getItem("currentUser") || "";
+‏  let properties = [];
+
+‏  function login() {
+‏    const phone = document.getElementById("phone").value.trim();
+‏    if (!phone) return;
+‏    document.getElementById("loginBox").style.display = "none";
+‏    db.ref("users").once("value", snapshot => {
+‏      const users = snapshot.val() || {};
+‏      if (users[phone]) {
+‏        currentUser = phone;
+‏        localStorage.setItem("currentUser", phone);
+‏        document.getElementById("filters").style.display = "flex";
+‏        displayProperties();
+‏      } else {
+‏        document.getElementById("loginNote").innerText = "ليس لديك حساب. رجاء التسجيل لتتمكن من الدخول";
+‏        document.getElementById("registerBox").style.display = "block";
+‏        document.getElementById("loginBox").style.display = "block";
       }
+    });
+  }
+
+‏  function register() {
+‏    const phone = document.getElementById("newUserPhone").value.trim();
+‏    if (!phone) return;
+‏    db.ref("users/" + phone).set({ registered: true }, () => {
+‏      alert("تم التسجيل بنجاح");
+‏      location.reload();
+    });
+  }
+
+‏  function displayProperties() {
+‏    db.ref("properties").once("value", snapshot => {
+‏      properties = [];
+‏      snapshot.forEach(child => {
+‏        properties.push(child.val());
+      });
+‏      renderProperties();
+    });
+  }
+
+‏  function renderProperties() {
+‏    const sort = document.getElementById("sortFilter").value;
+‏    const district = document.getElementById("districtFilter").value;
+‏    let filtered = [...properties];
+
+‏    if (district) {
+‏      filtered = filtered.filter(p => p.district === district);
     }
 
-    function deleteProperty(code) {
-      if (!confirm("هل أنت متأكد أنك تريد حذف هذا العقار؟")) return;
+‏    if (sort === "new") filtered.sort((a, b) => b.timestamp - a.timestamp);
+‏    if (sort === "old") filtered.sort((a, b) => a.timestamp - b.timestamp);
+‏    if (sort === "high") filtered.sort((a, b) => b.price - a.price);
+‏    if (sort === "low") filtered.sort((a, b) => a.price - b.price);
 
-      db.ref("properties").once("value", snapshot => {
-        snapshot.forEach(child => {
-          if (child.val().code === code) {
-            db.ref("properties/" + child.key).remove().then(() => {
-              alert("تم الحذف بنجاح");
-              displayProperties();
-            });
+‏    const listings = document.getElementById("listings");
+‏    listings.innerHTML = "";
+‏    filtered.forEach(prop => {
+‏      const div = document.createElement("div");
+‏      div.className = "property";
+‏      div.innerHTML = `
+‏        <img src="${prop.image}" alt="صورة العقار">
+‏        <h4>${prop.type}</h4>
+‏        <p><strong>الحي:</strong> ${prop.district}</p>
+‏        <p><strong>السعر:</strong> ${prop.price}</p>
+‏        <p><strong>الوصف:</strong> ${prop.desc}</p>
+‏        <p><strong>الكود:</strong> ${prop.code} 
+‏          <button class="share-btn" onclick="share('${prop.code}', '${prop.desc}')">مشاركة</button>
+‏          <button class="share-btn delete" onclick="deleteProperty('${prop.code}')">حذف</button>
+‏        </p>
+      `;
+‏      listings.appendChild(div);
+    });
+  }
+
+‏  function share(code, desc) {
+‏    const text = `إعلان رقم ${code}: ${desc}\nرابط الصفحة: ${window.location.href}`;
+‏    navigator.share ? navigator.share({ text }) : alert("انسخ الرابط: " + text);
+  }
+
+‏  function deleteProperty(code) {
+‏    if (confirm("هل أنت متأكد من حذف هذا العقار؟")) {
+‏      db.ref("properties").once("value", snapshot => {
+‏        snapshot.forEach(child => {
+‏          if (child.val().code === code) {
+‏            db.ref("properties/" + child.key).remove()
+‏              .then(() => {
+‏                alert("تم حذف العقار.");
+‏                displayProperties();
+              })
+‏              .catch(err => {
+‏                alert("حدث خطأ أثناء الحذف: " + err.message);
+              });
           }
         });
       });
     }
+  }
 
-    function enableEdit(code) {
-      document.getElementById(`type-${code}`).contentEditable = true;
-      document.getElementById(`district-${code}`).contentEditable = true;
-      document.getElementById(`price-${code}`).contentEditable = true;
-      document.getElementById(`desc-${code}`).contentEditable = true;
-      document.getElementById(`save-${code}`).style.display = "inline-block";
-      document.getElementById(`upload-${code}`).style.display = "block";
+‏  function logout() {
+‏    if (confirm("هل تريد تسجيل الخروج؟")) {
+‏      localStorage.removeItem("currentUser");
+‏      location.reload();
     }
+  }
 
-    function saveEdit(code) {
-      const updatedType = document.getElementById(`type-${code}`).innerText.trim();
-      const updatedDistrict = document.getElementById(`district-${code}`).innerText.trim();
-      const updatedPrice = document.getElementById(`price-${code}`).innerText.trim();
-      const updatedDesc = document.getElementById(`desc-${code}`).innerText.trim();
-      const imgElement = document.getElementById(`img-${code}`);
+‏  function filterProperties() {
+‏    renderProperties();
+  }
 
-      db.ref("properties").once("value", snapshot => {
-        snapshot.forEach(child => {
-          if (child.val().code === code) {
-            db.ref("properties/" + child.key).update({
-              type: updatedType,
-              district: updatedDistrict,
-              price: updatedPrice,
-              desc: updatedDesc,
-              image: imgElement.src
-            }).then(() => {
-              alert("تم حفظ التعديلات.");
-              displayProperties();
-            });
-          }
-        });
-      });
+‏  window.onload = () => {
+‏    if (currentUser) {
+‏      document.getElementById("loginBox").style.display = "none";
+‏      document.getElementById("filters").style.display = "flex";
+‏      displayProperties();
     }
+  }
+‏</script>
 
-    function previewImage(event, code) {
-      const file = event.target.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-          document.getElementById(`img-${code}`).src = e.target.result;
-        };
-        reader.readAsDataURL(file);
-      }
-    }
-
-    window.onload = displayProperties;
-  </script>
-
-</body>
-</html>
+‏</body>
+‏</html>
